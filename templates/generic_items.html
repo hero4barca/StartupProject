@@ -1,0 +1,193 @@
+{% extends 'index.html' %}
+{% load static %}
+
+
+    <title>
+        {% block title %}
+         generic items page
+      {% endblock %}
+    </title>
+
+
+{% block midpage %}
+<!-- products-breadcrumb -->
+	<div class="products-breadcrumb">
+		<div class="container">
+			<ul>
+				<li><i class="fa fa-home" aria-hidden="true"></i><a href="/index/">Home</a><span>|</span></li>
+                <li><a href="/categories/"> Categories</a> <span>|</span> </li>
+                <li> <a>other items(no category)</a> </li>
+			</ul>
+		</div>
+	</div>
+<!-- //products-breadcrumb -->
+<!-- banner -->
+	<div class="banner">
+		<div class="w3l_banner_nav_left">
+			<nav class="navbar nav_bottom">
+			 <!-- Brand and toggle get grouped for better mobile display -->
+			  <div class="navbar-header nav_2">
+				  <button type="button" class="navbar-toggle collapsed navbar-toggle1" data-toggle="collapse" data-target="#bs-megadropdown-tabs">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				  </button>
+			   </div>
+			   <!-- Collect the nav links, forms, and other content for toggling -->
+
+				{% block navbar %}
+                    {{block.super }}
+                {% endblock %}
+
+			</nav>
+		</div>
+
+		<div class="w3l_banner_nav_right">
+
+			<div class="w3ls_w3l_banner_nav_right_grid w3ls_w3l_banner_nav_right_grid_sub">
+
+				<h3 class="w3l_fruit">other items</h3>
+
+              {% if not  grid_items %}
+                <p style="text-align: center;">There are currently no items </p>
+
+              {% else %}
+                <!-- horizontal line starts -->
+                {%for  grid in grid_items%}
+                    {% if grid.col_num == 1%}
+                        <div class="w3ls_w3l_banner_nav_right_grid1 w3ls_w3l_banner_nav_right_grid1_veg">
+                        <div class="col-md-3 w3ls_w3l_banner_left w3ls_w3l_banner_left_asdfdfd">
+                    {% elif grid.col_num == 2 or grid.col_num == 4 %}
+                        <div class="col-md-3 w3ls_w3l_banner_left">
+                    {% elif grid.col_num == 3 %}
+                        <div class="col-md-3 w3ls_w3l_banner_left w3ls_w3l_banner_left_asd">
+                    {% endif %}
+
+                    <div class="hover14 column">
+
+						<div class="agile_top_brand_left_grid w3l_agile_top_brand_left_grid">
+							<div class="agile_top_brand_left_grid_pos">
+                                {% if grid.item.get_discounted_price %}
+								<img src=" {% static "images/offer.png" %}"  alt=" " class="img-responsive" />
+                                {% endif %}
+							</div>
+							<div class="agile_top_brand_left_grid1">
+								<figure>
+									<div class="snipcart-item block">
+										<div class="snipcart-thumb">
+											<a href="/item_details/{{ grid.item.pk }}/"><img src="{{ grid.item.img.url }}" alt=" " class="img-responsive" width="140" height="140px" /></a>
+											<p>{{ grid.item.get_name }}</p>
+                                            {% if grid.item.get_discounted_price %}
+                                                {% load humanize %}
+											    <h4>{{ grid.item.get_discounted_price|floatformat:2|intcomma }}
+                                                <span> {{ grid.item.get_price|floatformat:2|intcomma }}</span></h4>
+                                            {% else %}
+                                                <h4>{{ grid.item.get_price|floatformat:2|intcomma }}</h4>
+                                            {% endif %}
+										</div>
+										<div class="snipcart-details">
+											<form action="/add_order_item/" method="post">
+												<fieldset>
+													<input type="hidden" name="cmd" value="_cart" />
+													<input type="hidden" name="add" value="1" />
+
+													<input type="hidden" name="name" value="{{ grid.item.get_name }} " />
+
+													<input type="hidden" name="price"
+                                                         {% if not grid.item.get_discounted_price == 0 %}
+                                                            value="{{ grid.item.get_discounted_price }}"
+                                                         {% else %}
+                                                             value ="{{ grid.item.get_price }}"
+                                                         {% endif %}/>
+													<input type="hidden" name="discount_amount" value="{{ grid.item.get_discounted_price }}" />
+													<input type="hidden" name="itemID" value="{{ grid.item.pk }}" />
+													<input type="hidden" name="return" value=" " />
+													<input type="hidden" name="cancel_return" value=" " />
+                                                    {%  if grid.item.availability %}
+													    <input type="submit" name="submit" value="Add to cart" class="button" />
+                                                    {%  else %}
+                                                        <input type="submit" disabled value="not available" class="button" style="color: black; background: grey"/>
+                                                    {% endif %}
+                                                    {% csrf_token %}
+
+												</fieldset>
+											</form>
+										</div>
+									</div>
+								</figure>
+							</div>
+						</div>
+						</div>
+                    </div><!-- to close the column div -->
+
+                    {% if grid.col_num == 4 or forloop.last %}
+                        <div class="clearfix"> </div>
+				        </div> <!-- horizontal line end-->
+                    {% endif %}
+
+                {% endfor %}
+               {% endif %}
+
+			</div>
+		</div>
+		<div class="clearfix"></div>
+	</div>
+<!-- //banner -->
+
+<!-- Bootstrap Core JavaScript -->
+<script src="js/bootstrap.min.js"></script>
+<script>
+$(document).ready(function(){
+    $(".dropdown").hover(
+        function() {
+            $('.dropdown-menu', this).stop( true, true ).slideDown("fast");
+            $(this).toggleClass('open');
+        },
+        function() {
+            $('.dropdown-menu', this).stop( true, true ).slideUp("fast");
+            $(this).toggleClass('open');
+        }
+    );
+});
+</script>
+<!-- here stars scrolling icon -->
+	<script type="text/javascript">
+		$(document).ready(function() {
+			/*
+				var defaults = {
+				containerID: 'toTop', // fading element id
+				containerHoverID: 'toTopHover', // fading element hover id
+				scrollSpeed: 1200,
+				easingType: 'linear'
+				};
+			*/
+
+			$().UItoTop({ easingType: 'easeOutQuart' });
+
+			});
+	</script>
+<!-- //here ends scrolling icon -->
+<script src="js/minicart.js"></script>
+<script>
+		paypal.minicart.render();
+
+		paypal.minicart.cart.on('checkout', function (evt) {
+			var items = this.items(),
+				len = items.length,
+				total = 0,
+				i;
+
+			// Count the number of each item in the cart
+			for (i = 0; i < len; i++) {
+				total += items[i].get('quantity');
+			}
+
+			if (total < 3) {
+				alert('The minimum order quantity is 3. Please add more to your shopping cart before checking out');
+				evt.preventDefault();
+			}
+		});
+
+	</script>
+{% endblock %}

@@ -1,0 +1,202 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+    <title>
+      {% block title %}
+       order details
+      {% endblock %}
+    </title>
+
+
+{% block midpage %}
+<!-- products-breadcrumb -->
+	<div class="products-breadcrumb">
+		<div class="container">
+			<ul>
+				<li><i class="fa fa-home" aria-hidden="true"></i><a href="/index/">Home</a><span>|</span></li>
+
+                <li><a> Order details</a> </li>
+			</ul>
+		</div>
+	</div>
+<!-- //products-breadcrumb -->
+
+<!-- banner -->
+	<div class="banner">
+		<div class="w3l_banner_nav_left">
+			<nav class="navbar nav_bottom">
+			 <!-- Brand and toggle get grouped for better mobile display -->
+			  <div class="navbar-header nav_2">
+				  <button type="button" class="navbar-toggle collapsed navbar-toggle1" data-toggle="collapse" data-target="#bs-megadropdown-tabs">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				  </button>
+			   </div>
+			   <!-- Collect the nav links, forms, and other content for toggling -->
+
+				{% block navbar %}
+                    {{block.super }}
+                {% endblock %}
+
+			</nav>
+		</div>
+
+		<div class="w3l_banner_nav_right">
+
+
+            <div class="privacy about">
+			<h3>Confirm <span>Details</span></h3>
+
+	      <div class="checkout-right">
+            <div class="order_details">
+                <p> <span class="details-heading">Customer Name:  </span>{{ request.session.ord_firstname }} &nbsp; {{ request.session.ord_lastname }}
+                            {% if request.session.ord_gender == 'male'  %} (Mr.) {% else %} (Mrs.){% endif %}</p>
+                <p><span class="details-heading">Email:</span> {{ request.session.ord_email }} </p>
+                <p> <span class="details-heading">Tel No:</span>  {{ request.session.ord_phone_no }} </p>
+                <p> <span class="details-heading">Order delivery date: </span> {{ request.session.ord_delivery_date }}</p>
+                <p> <span class="details-heading"> Delivery address: </span> {{ request.session.ord_delivery_address }}</p>
+            </div>
+
+          <div>
+              <table class="order_details_table w3-table w3-bordered w3-hoverable ">
+                <thead>
+                    <tr>
+                        <th> No.</th>
+                        <th>Name(qty): description</th>
+                        <th>Price* qty</th>
+                    </tr>
+                </thead>
+                  {% for item in request.session.items_in_order %}
+                 <tbody>
+                  <tr>
+                      <td>
+                      {{ forloop.counter }}
+                  </td>
+                  <td>
+                      {{ item.name }}({{ item.qty }}) : {{ item.description }}
+                  </td>
+                    <td>
+                  {{ item.price }} * {{ item.qty }}
+                    </td>
+                  </tr>
+                  {% endfor %}
+                <tr class="total">
+                <td> - </td>
+                <td> Order Total</td>
+                     {% load humanize %}
+                <td> {{ request.session.current_total|floatformat:2|intcomma }}</td>
+                </tr>
+               <tr class="service_charge">
+               <td> - </td>
+               <td> Service charge</td>
+
+               <td> {{ request.session.service_charge|floatformat:2|intcomma }}</td>
+               </tr>
+                <tr class="total">
+                <td> - </td>
+                <td> Final Total</td>
+                <td> {{ request.session.total_plus_serviceCharge|floatformat:2|intcomma }}</td>
+                </tr>
+              </tbody>
+              </table>
+          </div>
+
+			</div>
+			<div class="checkout-left">
+
+				<div class="col-md-8 address_form_agile">
+
+                    <div class="checkout-right-basket checkout-back" style="">
+				        	<a href="/order/checkout/"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span> Back</a>
+			      	</div>
+
+                    <div class="checkout-right-basket checkout-proceed">
+				        	<a href="/order/payment/">Make Payment <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span></a>
+			      	</div>
+
+
+					</div>
+
+				<div class="clearfix"> </div>
+
+			</div>
+
+		</div>
+
+
+		</div>
+		<div class="clearfix"></div>
+	</div>
+<!-- //banner -->
+
+<!-- Bootstrap Core JavaScript -->
+<script src="js/bootstrap.min.js"></script>
+<script>
+$(document).ready(function(){
+    $(".dropdown").hover(
+        function() {
+            $('.dropdown-menu', this).stop( true, true ).slideDown("fast");
+            $(this).toggleClass('open');
+        },
+        function() {
+            $('.dropdown-menu', this).stop( true, true ).slideUp("fast");
+            $(this).toggleClass('open');
+        }
+    );
+});
+</script>
+<!-- here stars scrolling icon -->
+	<script type="text/javascript">
+		$(document).ready(function() {
+			/*
+				var defaults = {
+				containerID: 'toTop', // fading element id
+				containerHoverID: 'toTopHover', // fading element hover id
+				scrollSpeed: 1200,
+				easingType: 'linear'
+				};
+			*/
+
+			$().UItoTop({ easingType: 'easeOutQuart' });
+
+			});
+	</script>
+<!-- //here ends scrolling icon -->
+<script src="js/minicart.js"></script>
+<script>
+		paypal.minicart.render();
+
+		paypal.minicart.cart.on('checkout', function (evt) {
+			var items = this.items(),
+				len = items.length,
+				total = 0,
+				i;
+
+			// Count the number of each item in the cart
+			for (i = 0; i < len; i++) {
+				total += items[i].get('quantity');
+			}
+
+			if (total < 3) {
+				alert('The minimum order quantity is 3. Please add more to your shopping cart before checking out');
+				evt.preventDefault();
+			}
+		});
+
+	</script>
+
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.11.0/themes/smoothness/jquery-ui.css">
+<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+<script src="http://code.jquery.com/ui/1.11.0/jquery-ui.js"></script>
+ <script>
+$(document).ready(function() {
+    $('.datepicker').datepicker({
+        dateFormat: "dd-mm-yy",
+        minDate: 2
+    });
+});
+</script>
+{% endblock %}

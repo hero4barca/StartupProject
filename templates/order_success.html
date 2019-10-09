@@ -1,0 +1,222 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+    <title>
+      {% block title %}
+         order success!!
+      {% endblock %}
+    </title>
+
+
+{% block midpage %}
+<!-- products-breadcrumb -->
+	<div class="products-breadcrumb">
+		<div class="container">
+			<ul>
+				<li><i class="fa fa-home" aria-hidden="true"></i><a href="/index/">Home</a><span>|</span></li>
+
+                <li><a> Order confirmation</a></li>
+			</ul>
+		</div>
+	</div>
+<!-- //products-breadcrumb -->
+
+<!-- banner -->
+	<div class="banner">
+		<div class="w3l_banner_nav_left">
+			<nav class="navbar nav_bottom">
+			 <!-- Brand and toggle get grouped for better mobile display -->
+			  <div class="navbar-header nav_2">
+				  <button type="button" class="navbar-toggle collapsed navbar-toggle1" data-toggle="collapse" data-target="#bs-megadropdown-tabs">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				  </button>
+			   </div>
+			   <!-- Collect the nav links, forms, and other content for toggling -->
+
+				{% block navbar %}
+                    {{block.super }}
+                {% endblock %}
+
+			</nav>
+		</div>
+
+		<div class="w3l_banner_nav_right">
+
+
+            <div class="privacy about">
+
+			<h3>Order<span>Receipt</span></h3>
+            <div class="reciept-top-P">
+             {% if order_details %}
+            <p> Your have successfully paid for your order <br/> Order time: {{ order_details.get_order_date }} : {{ order_details.get_order_time }}
+                Find the details displayed below. </p>
+            {% else %}
+                 <p> Order not successfully created. Click here to return to <a href="/order/checkout/"><em>checkout</em></a></p>
+            {% endif %}
+            </div>
+	      <div class="checkout-right">
+
+          {% if order_details %}
+
+            <div class="order_details">
+                <p> <span class="details-heading">Customer Name:  </span>{{ order_details.get_buyer_firstname }}
+                    &nbsp; {{ order_details.get_buyer_lastname}}
+                            {% if order_details.get_buyer_gender == 'male'  %} (Mr.) {% else %} (Mrs.){% endif %}</p>
+                <p><span class="details-heading">Email:</span> {{ order_details.get_buyer_email }} </p>
+                <p> <span class="details-heading">Tel No:</span>  {{ order_details.get_buyer_phone_no}} </p>
+                <p> <span class="details-heading">Order delivery date: </span> {{ order_details.get_delivery_date }}</p>
+                <p> <span class="details-heading"> Delivery address: </span> {{ order_details.delivery_addr}}</p>
+                <p> <span class="details-heading"> Order date: </span> {{ order_details.get_order_date }} : {{ order_details.get_order_time }}</p>
+            </div>
+
+            <div>
+              <table class="order_details_table w3-table w3-bordered  ">
+                <thead>
+                    <tr>
+                        <th> No.</th>
+                        <th>Name(qty): description</th>
+                        <th>Price* qty</th>
+                    </tr>
+                </thead>
+                  {% for item in bought_items %}
+                 <tbody>
+                  <tr>
+                      <td>
+                      {{ forloop.counter }}
+                  </td>
+                  <td>
+                      {{ item.item.get_name }}({{ item.get_quantity }}) : {{ item.get_order_item_desc }}
+                  </td>
+                    <td>
+                  {{ item.get_order_item_price }} * {{ item.get_quantity }} = {{ item.get_price_by_qty }}
+                    </td>
+                  </tr>
+                  {% endfor %}
+
+               <tr class="service_charge">
+               <td> - </td>
+               <td> Service charge</td>
+                {% load humanize %}
+               <td> {{order_details.get_service_charge |floatformat:2|intcomma }}</td>
+               </tr>
+                <tr class="total">
+                <td> - </td>
+                <td> Final Total</td>
+                <td> {{ order_details.get_order_total|floatformat:2|intcomma }}</td>
+                </tr>
+              </tbody>
+              </table>
+
+
+          <div class="reciept-buttom-P">
+          <p> Your order will be delivered to you delivery address (<b>{{ order_details.delivery_addr }} </b>) on {{ order_details.get_delivery_date }}
+              between 9am and 4pm. For further enquires please call <b>0817 000 0000 </b> </p>
+              </div>
+
+          </div>
+            {% endif %}
+
+
+			</div>
+			<div class="checkout-left">
+
+				<div class="col-md-8 address_form_agile">
+
+
+
+                    <div class="checkout-right-basket checkout-proceed">
+				        	<a href="/order/download_receipt/ ">Download Order <span class="glyphicon glyphicon-chevron-down" aria-hidden="true"></span></a>
+			      	</div>
+
+
+					</div>
+
+				<div class="clearfix"> </div>
+
+			</div>
+
+		    </div>
+
+
+		</div>
+
+
+
+
+
+		<div class="clearfix"></div>
+	</div>
+<!-- //banner -->
+
+<!-- Bootstrap Core JavaScript -->
+<script src="js/bootstrap.min.js"></script>
+<script>
+$(document).ready(function(){
+    $(".dropdown").hover(
+        function() {
+            $('.dropdown-menu', this).stop( true, true ).slideDown("fast");
+            $(this).toggleClass('open');
+        },
+        function() {
+            $('.dropdown-menu', this).stop( true, true ).slideUp("fast");
+            $(this).toggleClass('open');
+        }
+    );
+});
+</script>
+<!-- here stars scrolling icon -->
+	<script type="text/javascript">
+		$(document).ready(function() {
+			/*
+				var defaults = {
+				containerID: 'toTop', // fading element id
+				containerHoverID: 'toTopHover', // fading element hover id
+				scrollSpeed: 1200,
+				easingType: 'linear'
+				};
+			*/
+
+			$().UItoTop({ easingType: 'easeOutQuart' });
+
+			});
+	</script>
+<!-- //here ends scrolling icon -->
+<script src="js/minicart.js"></script>
+<script>
+		paypal.minicart.render();
+
+		paypal.minicart.cart.on('checkout', function (evt) {
+			var items = this.items(),
+				len = items.length,
+				total = 0,
+				i;
+
+			// Count the number of each item in the cart
+			for (i = 0; i < len; i++) {
+				total += items[i].get('quantity');
+			}
+
+			if (total < 3) {
+				alert('The minimum order quantity is 3. Please add more to your shopping cart before checking out');
+				evt.preventDefault();
+			}
+		});
+
+	</script>
+
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.11.0/themes/smoothness/jquery-ui.css">
+<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+<script src="http://code.jquery.com/ui/1.11.0/jquery-ui.js"></script>
+ <script>
+$(document).ready(function() {
+    $('.datepicker').datepicker({
+        dateFormat: "dd-mm-yy",
+        minDate: 2
+    });
+});
+</script>
+{% endblock %}

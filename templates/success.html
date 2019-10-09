@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+
+
+{% extends 'index.html' %}
+{% load static %}
+
+
+    <title>
+        {% block title %}
+
+    cofirmation
+      {% endblock %}
+    </title>
+
+
+{% block midpage %}
+<!-- products-breadcrumb -->
+	<div class="products-breadcrumb">
+		<div class="container">
+			<ul>
+				<li><i class="fa fa-home" aria-hidden="true"></i><a href="/index/">Home</a><span>|</span></li>
+				<li> Confirmation </li>
+			</ul>
+		</div>
+	</div>
+<!-- //products-breadcrumb -->
+<!-- banner -->
+	<div class="banner">
+		<div class="w3l_banner_nav_left">
+			<nav class="navbar nav_bottom">
+			 <!-- Brand and toggle get grouped for better mobile display -->
+			  <div class="navbar-header nav_2">
+				  <button type="button" class="navbar-toggle collapsed navbar-toggle1" data-toggle="collapse" data-target="#bs-megadropdown-tabs">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				  </button>
+			   </div>
+			   <!-- Collect the nav links, forms, and other content for toggling -->
+
+				{% block navbar %}
+                    {{block.super }}
+                {% endblock %}
+
+			</nav>
+		</div>
+
+		<div class="w3l_banner_nav_right">
+            <!-- mail -->
+
+            <div class="mail">
+			<h3> Success</h3>
+			<div class="agileinfo_mail_grids">
+
+                {% if action == 'email' %}
+                  <p>Your email has been sent. We will contact with a response to your enquiry as soon as possible</p>
+                {% elif action == 'registration' %}
+                    <p> Your registration as a customer of market womank PH has been successfully completed. Click <a href="/login/">here to sign in</a></p>
+                {% elif action == 'password_reset' %}
+                    <p> An email has been sent to your specified email address, use the link in the mail to reset your password</p>
+                {% elif action == 'password_update' %}
+                    <p> Your password has been successfully updated. Click <a href="/login/">here to sign in</a></p>
+                {% endif %}
+			</div>
+		</div>
+
+		</div>
+		<div class="clearfix"></div>
+	</div>
+<!-- //banner -->
+
+<!-- Bootstrap Core JavaScript -->
+<script src="js/bootstrap.min.js"></script>
+<script>
+$(document).ready(function(){
+    $(".dropdown").hover(
+        function() {
+            $('.dropdown-menu', this).stop( true, true ).slideDown("fast");
+            $(this).toggleClass('open');
+        },
+        function() {
+            $('.dropdown-menu', this).stop( true, true ).slideUp("fast");
+            $(this).toggleClass('open');
+        }
+    );
+});
+</script>
+<!-- here stars scrolling icon -->
+	<script type="text/javascript">
+		$(document).ready(function() {
+			/*
+				var defaults = {
+				containerID: 'toTop', // fading element id
+				containerHoverID: 'toTopHover', // fading element hover id
+				scrollSpeed: 1200,
+				easingType: 'linear'
+				};
+			*/
+
+			$().UItoTop({ easingType: 'easeOutQuart' });
+
+			});
+	</script>
+<!-- //here ends scrolling icon -->
+<script src="js/minicart.js"></script>
+<script>
+		paypal.minicart.render();
+
+		paypal.minicart.cart.on('checkout', function (evt) {
+			var items = this.items(),
+				len = items.length,
+				total = 0,
+				i;
+
+			// Count the number of each item in the cart
+			for (i = 0; i < len; i++) {
+				total += items[i].get('quantity');
+			}
+
+			if (total < 3) {
+				alert('The minimum order quantity is 3. Please add more to your shopping cart before checking out');
+				evt.preventDefault();
+			}
+		});
+
+	</script>
+{% endblock %}

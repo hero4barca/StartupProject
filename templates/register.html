@@ -1,0 +1,190 @@
+{% extends 'index.html' %}
+{% load static %}
+
+
+    <title>
+      {% block title %}
+        register
+      {% endblock %}
+    </title>
+
+
+{% block midpage %}
+<!-- products-breadcrumb -->
+	<div class="products-breadcrumb">
+		<div class="container">
+			<ul>
+				<li><i class="fa fa-home" aria-hidden="true"></i><a href="/index/">Home</a><span>|</span></li>
+
+                <li> <a>Sign up </a></li>
+			</ul>
+		</div>
+	</div>
+<!-- //products-breadcrumb -->
+
+<!-- banner -->
+	<div class="banner">
+		<div class="w3l_banner_nav_left">
+			<nav class="navbar nav_bottom">
+			 <!-- Brand and toggle get grouped for better mobile display -->
+			  <div class="navbar-header nav_2">
+				  <button type="button" class="navbar-toggle collapsed navbar-toggle1" data-toggle="collapse" data-target="#bs-megadropdown-tabs">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				  </button>
+			   </div>
+			   <!-- Collect the nav links, forms, and other content for toggling -->
+
+				{% block navbar %}
+                    {#  block.super  #}
+                {% endblock %}
+
+			</nav>
+		</div>
+
+		<div class="w3l_banner_nav_right">
+            <!-- login -->
+                    {% if success %}
+                        <div class="w3-panel w3-green">
+                         <h3>Congratulations!</h3>
+                        <p>You have been successfully registered as a customer. Click here to <a href="/login/">login</a> </p>
+                        </div>
+                    {% endif %}
+                <div class="w3_login">
+                    <h3> Sign Up</h3>
+                    <div class="w3_login_module">
+                        <div class="module form-module">
+                          <div class="toggle"><i class="fa fa-times fa-pencil"></i>
+
+                          </div>
+
+                          <div class="form">
+                            <h2>Create an account</h2>
+                            <form action="/sign_up/" method="post">
+
+                            {% if form.errors %}
+                                <p style="color: red;">
+                                 Please correct the error{{ form.errors|pluralize }} below.
+                                </p>
+                                  {% if form.message.errors %}
+                                    <ul>
+                                        {% for error in form.message.errors %}
+                                         <li><strong>{{ error }}</strong></li>
+                                        {% endfor %}
+                                    </ul>
+                                  {% endif %}
+                            {% endif %}
+                                {{ form.firstname.errors}}
+                                {{ form.firstname }}
+
+                                {{ form.lastname.errors }}
+                                {{ form.lastname }}
+
+                                {{ form.username.errors }}
+                                {{ form.username }}
+
+                                {{ form.password.errors }}
+                                {{ form.password }}
+
+                                {{ form.password_repeat.errors }}
+                                {{ form.password_repeat }}
+
+                                {{ form.email.errors }}
+                                {{ form.email }}
+
+                                {{ form.phonenumber.errors }}
+                                {{ form.phonenumber }}
+
+                                {{ form.gender.errors }}
+                                {{ form.gender }} <br/>
+
+                                <div>
+                                {{ form.address.errors }}
+                                {{ form.address }} <br/> <br/>
+                                </div>
+
+                                <div>
+                                {{ form.alt_address_1.errors }}
+                                {{ form.alt_address_1}}<br/> <br/>
+                                </div>
+
+                                <div>
+                                {{ form.alt_address_2.errors }}
+                                {{ form.alt_address_2 }}<br/><br/>
+                                </div>
+                                {% csrf_token %}
+                              <input type="submit" value="Register">
+                            </form>
+                          </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+		</div>
+		<div class="clearfix"></div>
+	</div>
+<!-- //banner -->
+
+<!-- Bootstrap Core JavaScript -->
+<script src="js/bootstrap.min.js"></script>
+<script>
+$(document).ready(function(){
+    $(".dropdown").hover(
+        function() {
+            $('.dropdown-menu', this).stop( true, true ).slideDown("fast");
+            $(this).toggleClass('open');
+        },
+        function() {
+            $('.dropdown-menu', this).stop( true, true ).slideUp("fast");
+            $(this).toggleClass('open');
+        }
+    );
+});
+</script>
+<!-- here stars scrolling icon -->
+	<script type="text/javascript">
+		$(document).ready(function() {
+			/*
+				var defaults = {
+				containerID: 'toTop', // fading element id
+				containerHoverID: 'toTopHover', // fading element hover id
+				scrollSpeed: 1200,
+				easingType: 'linear'
+				};
+			*/
+
+			$().UItoTop({ easingType: 'easeOutQuart' });
+
+			});
+	</script>
+<!-- //here ends scrolling icon -->
+<script src="js/minicart.js"></script>
+<script>
+		paypal.minicart.render();
+
+		paypal.minicart.cart.on('checkout', function (evt) {
+			var items = this.items(),
+				len = items.length,
+				total = 0,
+				i;
+
+			// Count the number of each item in the cart
+			for (i = 0; i < len; i++) {
+				total += items[i].get('quantity');
+			}
+
+			if (total < 3) {
+				alert('The minimum order quantity is 3. Please add more to your shopping cart before checking out');
+				evt.preventDefault();
+			}
+		});
+
+	</script>
+
+
+{% endblock %}

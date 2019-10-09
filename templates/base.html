@@ -1,0 +1,362 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+{% block head %}
+{% load static %}
+
+<title> {% block title %}  Market Woman  {% endblock %}</title>
+
+<link rel="icon" href="{% static "images/myImages/logo_icon.png" %}" type="image/png" >
+
+<!-- for-mobile-apps -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="keywords" content="Online Grocery Store, E-commerce, Grocery Delivery Services, E-Business in Port Harcourt, Home delivery services around Port-Harcourt,
+ Fresh Groceries Online in PH" />
+<script type="application/x-javascript"> addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false);
+		function hideURLbar(){ window.scrollTo(0,1); } </script>
+<!-- //for-mobile-apps -->
+<link href=" {% static "css/bootstrap.css" %} " rel="stylesheet" type="text/css" media="all" />
+<link   href="{% static "css/style.css" %}" rel="stylesheet" type="text/css" media="all" />
+<!-- font-awesome icons -->
+<link href= " {% static "css/font-awesome.css" %}" rel="stylesheet" type="text/css" media="all" />
+<!-- //font-awesome icons -->
+<!-- for w3.css stylesheet  -->
+<link rel="stylesheet" href=" {% static "css/w3.css" %} " />
+<!-- // w3.css stylesheet-->
+<!-- myCss stylesheet-->
+<link rel="stylesheet" href=" {% static "css/myCss.css" %} " />
+<!--// myCss stylesheet-->
+<!-- js -->
+ <script
+  src="https://code.jquery.com/jquery-3.4.1.js"
+  integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="
+  crossorigin="anonymous"></script>
+<script src= "{% static  "js/jquery-1.11.1.min.js"%}" > </script>
+
+<!-- //js -->
+<link href='//fonts.googleapis.com/css?family=Ubuntu:400,300,300italic,400italic,500,500italic,700,700italic' rel='stylesheet' type='text/css'>
+<link href='//fonts.googleapis.com/css?family=Open+Sans:400,300,300italic,400italic,600,600italic,700,700italic,800,800italic' rel='stylesheet' type='text/css'>
+<!-- start-smoth-scrolling -->
+<script type="text/javascript" src="{% static  "js/move-top.js"%}"  ></script>
+<script type="text/javascript" src= "{% static  "js/easing.js"%}" ></script>
+
+
+<script type="text/javascript">
+	jQuery(document).ready(function($) {
+		$(".scroll").click(function(event){
+			event.preventDefault();
+			$('html,body').animate({scrollTop:$(this.hash).offset().top},1000);
+		});
+	});
+</script>
+
+
+<!-- start-smoth-scrolling -->
+    {% endblock %}
+</head>
+
+
+<body>
+<!-- header -->
+{% block header %}
+
+    {% block floating-top %}
+	<div class="agileits_header" >
+		<div class="w3l_offers" style="font-size: 15.5px" >
+			<a href="/index/"> Always Reliable</a>
+		</div>
+
+
+            <div class="w3l_search w3-dropdown-hover ">
+
+                 <form  autocomplete="off">
+                     <input type="text" name="Product" id="search-input" placeholder="Search for items..." aria-label="Search">
+                    <input type="submit" value="" id="search-icon">
+
+                 </form>
+
+
+
+                <div class="w3-dropdown-content ajax-search-content" id="replaceable-content">
+                {% include 'search-results-partial.html' %}
+
+                </div>
+
+            </div>
+
+
+
+
+
+
+		<div class="product_list_header dropdown" >
+
+
+            <div class="top_checkout_box last">
+                <a href="/order/checkout"> Check out ({{request.session.items_in_order|length  }})</a>
+            </div>
+
+
+                {% load humanize %}
+            <div class="dropdown-content w3-responsive">
+                {% if not request.session.items_in_order %}
+                    <p>No items in cart </p>
+                {% else %}
+                    <table class="w3-table-all w3-tiny">
+
+                    {% for item in  request.session.items_in_order %}
+                        <tr>
+                        <td>{{ item.name}}</td>
+                        <td>{{ item.price|floatformat:2|intcomma }}*{{ item.qty }}</td>
+                        <!--<td><a href="/remove_order_item/{ {item.name} }/">X</a> </td> -->
+                        </tr>
+
+                    {% endfor %}
+
+                        <tr style="border: 2px solid #8B8B8B">
+                            <td>Total:</td>
+                            <td>{{ request.session.current_total|floatformat:2|intcomma }}</td>
+                        </tr>
+                    </table>
+
+                    <a href="/order/checkout/"> <u>Edit cart</u></a>
+                {% endif %}
+
+            </div>
+
+        </div>
+
+
+		<div class="w3l_header_right">
+			<ul>
+				<li class="dropdown profile_details_drop">
+					<a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user" aria-hidden="true"></i><span class="caret"></span></a>
+					<div class="mega-dropdown-menu">
+						<div class="w3ls_vegetables">
+							<ul class="dropdown-menu drp-mnu">
+                                {% if not request.session.username %}
+								<li><a href="/login/">Login</a></li>
+								<li><a href="/sign_up/">Sign Up</a></li>
+                                {% else %}
+                                <li> Hi  {{ request.session.username }},</li>
+                                <li><a href=""> profile</a></li>
+                                <li><a href="/logout/" > logout </a></li>
+                                {% endif %}
+							</ul>
+						</div>
+					</div>
+				</li>
+			</ul>
+		</div>
+		<div class="w3l_header_right1">
+			<h2 style="margin: 0px;"><a href="/contact/">Contact Us</a></h2>
+		</div>
+		<div class="clearfix"> </div>
+	</div>
+<!-- script-for sticky-nav -->
+	<script>
+	$(document).ready(function() {
+		 var navoffeset=$(".agileits_header").offset().top;
+		 $(window).scroll(function(){
+			var scrollpos=$(window).scrollTop();
+			if(scrollpos >=navoffeset){
+				$(".agileits_header").addClass("fixed");
+			}else{
+				$(".agileits_header").removeClass("fixed");
+			}
+		 });
+
+	});
+	</script>
+<!-- //script-for sticky-nav -->
+        {% endblock %}
+
+    {% block logo-part %}
+	<div class="logo_products">
+		<div class="container" style="padding-left: 5px; margin-left: 0px">
+			<div class="w3ls_logo_products_left">
+
+				<!--<h1><a href="index.html" style=""><span>Grocery</span> Store</a></h1>-->
+
+                <h1><a href="/index/"><img src="{% static "images/myImages/logo.png" %}" alt="" class="img-responsive"> </a></h1>
+
+			</div>
+			<div class="w3ls_logo_products_left1">
+				<ul class="special_items">
+					<!--<li><a href="events.html">Events</a><i>/</i></li>-->
+					<li><a href="/about/">About Us</a><i>/</i></li>
+					<li><a href="/about/">Services</a><i></i></li>
+					<!--<li><a href="services.html">Services</a></li>-->
+				</ul>
+			</div>
+			<div class="w3ls_logo_products_left1">
+				<ul class="phone_email">
+					<li><i class="fa fa-phone" aria-hidden="true"></i>{{ request.session.shop_phoneNo }}</li>
+					<li><i class="fa fa-envelope-o" aria-hidden="true"></i><a href="mailto:store@grocery.com">{{ request.session.shop_email }}</a></li>
+				</ul>
+			</div>
+			<div class="clearfix"> </div>
+		</div>
+	</div>
+    {% endblock %}
+{% endblock %}
+<!-- //header -->
+
+<!-- banner -->
+{% block midpage %}
+
+{% endblock %}
+<!-- newsletter -->
+	<div class="newsletter">
+		<div class="container">
+			<div class="w3agile_newsletter_left">
+				<h3>sign up as customer</h3>
+			</div>
+
+			<div class="w3agile_newsletter_right">
+
+				<form action="#" method="post">
+					<!--<input type="email" name="Email" value="Email" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'Email';}" required="">
+
+					<input type="submit" value="subscribe now" class="w3-button w3-white w3-hover-pale-green">-->
+                    <a href="/sign_up/"  id="register-link" style="width:90%; color: red;">Click here to register</a>
+				</form>
+
+			</div>
+
+			<div class="clearfix"> </div>
+		</div>
+	</div>
+<!-- //newsletter -->
+<!-- footer -->
+	<div class="footer">
+		<div class="container">
+			<div class="col-md-3 w3_footer_grid">
+				<h3>information</h3>
+				<ul class="w3_footer_grid_list">
+					<li><a href="/about/">Services</a></li>
+					<li><a href="/about/">About Us</a></li>
+					<li><a href="/contact/">Contact us</a></li>
+					<li><a>Blog</a></li>
+
+				</ul>
+			</div>
+			<div class="col-md-3 w3_footer_grid">
+				<h3>policy info</h3>
+				<ul class="w3_footer_grid_list">
+
+					<li><a href="/policy/">Order policy</a></li>
+					<li><a href="">Payment Info</a></li>
+				</ul>
+			</div>
+			<div class="col-md-3 w3_footer_grid">
+				<h3>what's on offer</h3>
+				<ul class="w3_footer_grid_list">
+					<li><a href="/categories/">All categories</a></li>
+					<li><a >Discounted Items</a></li>
+					<li><a>Deals</a></li>
+					<li><a>Branded Foods</a></li>
+
+				</ul>
+			</div>
+
+			<div class="col-md-3 w3_footer_grid">
+				<h3>blog posts</h3>
+				<ul class="w3_footer_grid_list1">
+                    <!--
+					<li><label class="fa fa-twitter" aria-hidden="true"></label><i>01 day ago</i><span>Non numquam <a href="#">http://sd.ds/13jklf#</a>
+						eius modi tempora incidunt ut labore et
+						<a href="#">http://sd.ds/1389kjklf#</a>quo nulla.</span></li>
+					<li><label class="fa fa-twitter" aria-hidden="true"></label><i>02 day ago</i><span>Con numquam <a href="#">http://fd.uf/56hfg#</a>
+						eius modi tempora incidunt ut labore et
+						<a href="#">http://fd.uf/56hfg#</a>quo nulla.</span></li>-->
+				</ul>
+			</div>
+			<div class="clearfix"> </div>
+			<div class="agile_footer_grids">
+				<div class="col-md-3 w3_footer_grid agile_footer_grids_w3_footer">
+					<div class="w3_footer_grid_bottom">
+						<h4>100% secure payments</h4>
+						<img src=" {%  static "images/card.png" %}" alt=" " class="img-responsive" />
+					</div>
+				</div>
+				<div class="col-md-3 w3_footer_grid agile_footer_grids_w3_footer">
+					<div class="w3_footer_grid_bottom">
+						<h5>connect with us</h5>
+						<ul class="agileits_social_icons">
+							<li><a href="https://web.facebook.com/Market-Woman-108061283930207" class="facebook"><i class="fa fa-facebook" aria-hidden="true"></i></a></li>
+							<li><a href="#" class="twitter"><i class="fa fa-twitter" aria-hidden="true"></i></a></li>
+							<li><a href="#" class="google"><i class="fa fa-google-plus" aria-hidden="true"></i></a></li>
+							<li><a href="#" class="instagram"><i class="fa fa-instagram" aria-hidden="true"></i></a></li>
+							<li><a href="#" class="dribbble"><i class="fa fa-dribbble" aria-hidden="true"></i></a></li>
+						</ul>
+					</div>
+				</div>
+				<div class="clearfix"> </div>
+			</div>
+			<div class="wthree_footer_copy">
+				<p>© 2019 Market Woman. All rights reserved | <a href="http://w3layouts.com/">W3layouts</a> | <a href=""> w3.CSS</a> </p>
+			</div>
+		</div>
+	</div>
+<!-- //footer -->
+<!-- Bootstrap Core JavaScript -->
+<script src= {% static "js/bootstrap.min.js"%}></script>
+<script>
+$(document).ready(function(){
+    $(".dropdown").hover(
+        function() {
+            $('.dropdown-menu', this).stop( true, true ).slideDown("fast");
+            $(this).toggleClass('open');
+        },
+        function() {
+            $('.dropdown-menu', this).stop( true, true ).slideUp("fast");
+            $(this).toggleClass('open');
+        }
+    );
+});
+</script>
+<!-- here stars scrolling icon -->
+	<script type="text/javascript">
+		$(document).ready(function() {
+			/*
+				var defaults = {
+				containerID: 'toTop', // fading element id
+				containerHoverID: 'toTopHover', // fading element hover id
+				scrollSpeed: 1200,
+				easingType: 'linear'
+				};
+			*/
+
+			$().UItoTop({ easingType: 'easeOutQuart' });
+
+			});
+	</script>
+<!-- //here ends scrolling icon -->
+<script src= "{%  static "minicart.js" %} "></script>
+<script>
+		paypal.minicart.render();
+
+		paypal.minicart.cart.on('checkout', function (evt) {
+			var items = this.items(),
+				len = items.length,
+				total = 0,
+				i;
+
+			// Count the number of each item in the cart
+			for (i = 0; i < len; i++) {
+				total += items[i].get('quantity');
+			}
+
+			if (total < 3) {
+				alert('The minimum order quantity is 3. Please add more to your shopping cart before checking out');
+				evt.preventDefault();
+			}
+		});
+
+	</script>
+<script type="text/javascript" src= "{% static  "js/my-scripts.js"%}" ></script>
+</body>
+</html>

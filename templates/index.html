@@ -1,0 +1,288 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+    <title>
+        {% block title %}
+    {{ block.super}}
+        :index
+      {% endblock %}
+    </title>
+
+
+{% block midpage %}
+
+    <div class="banner">
+		<div class="w3l_banner_nav_left">
+			<nav class="navbar nav_bottom">
+			 <!-- Brand and toggle get grouped for better mobile display -->
+			  <div class="navbar-header nav_2">
+				  <button type="button" class="navbar-toggle collapsed navbar-toggle1" data-toggle="collapse" data-target="#bs-megadropdown-tabs">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				  </button>
+			   </div>
+			   <!-- Collect the nav links, forms, and other content for toggling -->
+                {% block navbar %}
+				<div class="collapse navbar-collapse" id="bs-megadropdown-tabs">
+					<ul class="nav navbar-nav nav_1">
+                        <li style="font-weight: bold;"><a href="/categories/">List all categories</a></li>
+                        {% for category in categories %}
+                            {% if forloop.counter < 8 %}
+                                <li><a href="/categories/{{ category.pk }}/"> {{ category.get_name }}</a></li>
+                            {% else %}
+                                {{ exit }}
+                            {% endif %}
+                        {% endfor %}
+                        <li><a href="/generic_items/"> other items(no category)</a></li>
+
+					</ul>
+				 </div><!-- /.navbar-collapse -->
+			</nav>
+		</div>
+        {% endblock %}
+
+        {% block slider-header %}
+        <div class="w3l_banner_nav_right">
+			<section class="slider">
+				<div class="flexslider">
+					<ul class="slides">
+						<li>
+							<div class="w3l_banner_nav_right_banner">
+								<h3>Get us your <span>Shopping list</span> </h3>
+
+								<div class="more">
+									<a href="/categories/" class="button--saqui button--round-l button--text-thick" data-text="Order now">Order now</a>
+								</div>
+							</div>
+						</li>
+						<li>
+							<div class="w3l_banner_nav_right_banner1">
+                                <h3> <i>Mek we do your</i> <span><i>market runs!</i> </span> </h3>
+								<div class="more">
+									<a href="/categories/" class="button--saqui button--round-l button--text-thick" data-text="Order now">Order now</a>
+								</div>
+							</div>
+						</li>
+						<li>
+							<div class="w3l_banner_nav_right_banner2">
+								<h3>Save some <i>time</i> and <i> money</i></h3>
+								<div class="more">
+									<a href="/categories/" class="button--saqui button--round-l button--text-thick" data-text="Order now">Order now</a>
+								</div>
+							</div>
+						</li>
+					</ul>
+				</div>
+			</section>
+			<!-- flexSlider -->
+				<link rel="stylesheet" href="{% static "css/flexslider.css" %} " type="text/css" media="screen" property="" />
+				<script defer src="{% static  "js/jquery.flexslider.js" %}"></script>
+				<script type="text/javascript">
+				$(window).load(function(){
+				  $('.flexslider').flexslider({
+					animation: "slide",
+					start: function(slider){
+					  $('body').removeClass('loading');
+					}
+				  });
+				});
+			  </script>
+			<!-- //flexSlider -->
+		</div>
+        {% endblock %}
+
+		<div class="clearfix"></div>
+	</div>
+<!-- banner -->
+	<div class="banner_bottom">
+			<div class="wthree_banner_bottom_left_grid_sub">
+			</div>
+			<div class="wthree_banner_bottom_left_grid_sub1">
+				<div class="col-md-4 wthree_banner_bottom_left">
+					<div class="wthree_banner_bottom_left_grid">
+						<img src="{% static "images/myImages/tile1.png" %}"  alt=" most reliable grocery delivery service in Port Harcourt" class="img-responsive" />
+						<div class="wthree_banner_bottom_left_grid_pos">
+							<!--<h4>most reliable <span>Grocery Delivey Service</span>in port harcourt</h4>-->
+						</div>
+					</div>
+				</div>
+				<div class="col-md-4 wthree_banner_bottom_left">
+					<div class="wthree_banner_bottom_left_grid">
+						<img src= "{% static "images/myImages/empty-tile.png" %}" alt=" " class="img-responsive" />
+						<div class="wthree_banner_btm_pos">
+							<!--<h3>introducing <span>best Online store</span> for <i>groceries</i></h3>-->
+                            <ul class="steps_tile_ul">
+                                <li class="steps_tile_ul_li"> You shop food items, enter delivery address & date and make payment online</li>
+                                <li> We deliver to your specified address on the chosen date</li>
+                                <li> Note: Delivery date must be at least a day after order is placed i.e. order today to have items delivered tomorrow</li>
+
+                            </ul>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-4 wthree_banner_bottom_left">
+					<div class="wthree_banner_bottom_left_grid">
+						<img src= "{% static  "images/4.jpg"%}" alt=" " class="img-responsive" />
+						<div class="wthree_banner_btm_pos1">
+							<h3 style="margin:0; line-height: 1em">Save <span>Time</span> And <span>Money</span></h3>
+						</div>
+					</div>
+				</div>
+				<div class="clearfix"> </div>
+			</div>
+			<div class="clearfix"> </div>
+	</div>
+<!-- top-brands -->
+	<div class="top-brands">
+		<div class="container">
+			<h3>Popular</h3>
+			<div class="agile_top_brands_grids">
+
+
+            {% for item in sample_items %}
+                <div class="col-md-3 top_brand_left">
+					<div class="hover14 column">
+						<div class="agile_top_brand_left_grid">
+							<!--<div class="tag"><img src="{ % static "images/tag.png" %}" alt=" " class="img-responsive" /></div>-->
+                            {% if item.get_discounted_price %}
+                                <div class="agile_top_brand_left_grid_pos">
+                                    <img src="{% static "images/offer.png" %}" alt=" " class="img-responsive" />
+                                </div>
+                            {% endif %}
+							<div class="agile_top_brand_left_grid1">
+								<figure>
+									<div class="snipcart-item block" >
+										<div class="snipcart-thumb">
+											<a href="/item_details/{{ item.pk }}/"><img title=" " alt=" " src="{{ item.img.url }}" height="140" width="140"   /></a>
+											<p>{{ item.get_name }}</p>
+											{% load humanize %}
+                                            {% if item.get_discounted_price %}
+											    <h4>{{ item.get_discounted_price|floatformat:2|intcomma}}
+                                                <span> {{ item.get_price|floatformat:2|intcomma }}</span></h4>
+                                            {% else %}
+                                                <h4>{{ item.get_price|floatformat:2|intcomma }}</h4>
+                                            {% endif %}
+										</div>
+										<div class="snipcart-details top_brand_home_details">
+											<form action="/add_order_item/" method="post">
+												<fieldset>
+													<input type="hidden" name="cmd" value="_cart" />
+													<input type="hidden" name="add" value="1" />
+
+													<input type="hidden" name="name" value="{{ item.get_name }} " />
+
+													<input type="hidden" name="price"
+
+                                                         {% if not item.get_discounted_price == 0 %}
+                                                            value="{{ item.get_discounted_price }}"
+                                                         {% else %}
+                                                             value ="{{ item.get_price}}"
+                                                         {% endif %}/>
+													<input type="hidden" name="discount_amount" value="{{ item.get_discounted_price }}" />
+													<input type="hidden" name="itemID" value="{{ item.pk }}" />
+													<input type="hidden" name="return" value=" " />
+													<input type="hidden" name="cancel_return" value=" " />
+                                                    {%  if item.availability %}
+
+													    <input type="submit" name="submit" value="Add to cart" class="button" />
+
+                                                    {%  else %}
+                                                        <input type="submit" disabled value="not available" class="button" style="color: black; background: grey"/>
+                                                    {% endif %}
+                                                    {% csrf_token %}
+
+												</fieldset>
+
+											</form>
+
+										</div>
+									</div>
+								</figure>
+							</div>
+						</div>
+					</div>
+				</div>
+            {% endfor %}
+
+				<div class="clearfix"> </div>
+			</div>
+		</div>
+	</div>
+<!-- //top-brands -->
+
+<!-- fresh-vegetables -->
+    <!--
+	<div class="fresh-vegetables">
+		<div class="container">
+			<h3>Top Products</h3>
+			<div class="w3l_fresh_vegetables_grids">
+				<div class="col-md-3 w3l_fresh_vegetables_grid w3l_fresh_vegetables_grid_left">
+					<div class="w3l_fresh_vegetables_grid2">
+						<ul>
+							<li><i class="fa fa-check" aria-hidden="true"></i><a href="products.html">All Brands</a></li>
+							<li><i class="fa fa-check" aria-hidden="true"></i><a href="vegetables.html">Vegetables</a></li>
+							<li><i class="fa fa-check" aria-hidden="true"></i><a href="vegetables.html">Fruits</a></li>
+							<li><i class="fa fa-check" aria-hidden="true"></i><a href="drinks.html">Juices</a></li>
+							<li><i class="fa fa-check" aria-hidden="true"></i><a href="pet.html">Pet Food</a></li>
+							<li><i class="fa fa-check" aria-hidden="true"></i><a href="bread.html">Bread & Bakery</a></li>
+							<li><i class="fa fa-check" aria-hidden="true"></i><a href="household.html">Cleaning</a></li>
+							<li><i class="fa fa-check" aria-hidden="true"></i><a href="products.html">Spices</a></li>
+							<li><i class="fa fa-check" aria-hidden="true"></i><a href="products.html">Dry Fruits</a></li>
+							<li><i class="fa fa-check" aria-hidden="true"></i><a href="products.html">Dairy Products</a></li>
+						</ul>
+					</div>
+				</div>
+				<div class="col-md-9 w3l_fresh_vegetables_grid_right">
+					<div class="col-md-4 w3l_fresh_vegetables_grid">
+						<div class="w3l_fresh_vegetables_grid1">
+							<img src="{ % static "images/8.jpg" %}" alt=" " class="img-responsive" />
+						</div>
+					</div>
+					<div class="col-md-4 w3l_fresh_vegetables_grid">
+						<div class="w3l_fresh_vegetables_grid1">
+							<div class="w3l_fresh_vegetables_grid1_rel">
+								<img src="{ % static "images/7.jpg"%}"  alt=" " class="img-responsive" />
+								<div class="w3l_fresh_vegetables_grid1_rel_pos">
+									<div class="more m1">
+										<a href="products.html" class="button--saqui button--round-l button--text-thick" data-text="Shop now">Shop now</a>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="w3l_fresh_vegetables_grid1_bottom">
+							<img src= "{ % static  "images/10.jpg"%}" alt=" " class="img-responsive" />
+							<div class="w3l_fresh_vegetables_grid1_bottom_pos">
+								<h5>Special Offers</h5>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-4 w3l_fresh_vegetables_grid">
+						<div class="w3l_fresh_vegetables_grid1">
+							<img src="{ % static "images/9.jpg" %}"  alt=" " class="img-responsive" />
+						</div>
+						<div class="w3l_fresh_vegetables_grid1_bottom">
+							<img src="{ % static "images/11.jpg" %}"  alt=" " class="img-responsive" />
+						</div>
+					</div>
+					<div class="clearfix"> </div>
+					<div class="agileinfo_move_text">
+						<div class="agileinfo_marquee">
+							<h4>get <span class="blink_me">25% off</span> on first order and also get gift voucher</h4>
+						</div>
+						<div class="agileinfo_breaking_news">
+							<span> </span>
+						</div>
+						<div class="clearfix"></div>
+					</div>
+				</div>
+				<div class="clearfix"> </div>
+			</div>
+		</div>
+	</div>
+-->
+<!-- //fresh-vegetables -->
+
+{% endblock %}

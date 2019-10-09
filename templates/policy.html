@@ -1,0 +1,156 @@
+{% extends 'index.html' %}
+{% load static %}
+
+
+    <title>
+        {% block title %}
+
+
+   policy
+      {% endblock %}
+    </title>
+
+
+{% block midpage %}
+<!-- products-breadcrumb -->
+	<div class="products-breadcrumb">
+		<div class="container">
+			<ul>
+				<li><i class="fa fa-home" aria-hidden="true"></i><a href="/index/">Home</a><span>|</span></li>
+				<li> <a> Policy</a>  </li>
+			</ul>
+		</div>
+	</div>
+<!-- //products-breadcrumb -->
+<!-- banner -->
+	<div class="banner">
+		<div class="w3l_banner_nav_left">
+			<nav class="navbar nav_bottom">
+			 <!-- Brand and toggle get grouped for better mobile display -->
+			  <div class="navbar-header nav_2">
+				  <button type="button" class="navbar-toggle collapsed navbar-toggle1" data-toggle="collapse" data-target="#bs-megadropdown-tabs">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				  </button>
+			   </div>
+			   <!-- Collect the nav links, forms, and other content for toggling -->
+
+				{% block navbar %}
+                    {{block.super }}
+                {% endblock %}
+
+			</nav>
+		</div>
+
+		<div class="w3l_banner_nav_right">
+            <!-- policy-->
+            <div class="privacy">
+			<div class="privacy1">
+				<h3>Order Policy</h3>
+				<div class="banner-bottom-grid1 privacy1-grid">
+					<ul>
+						<!--<li><i class="glyphicon glyphicon-user" aria-hidden="true"></i></li> -->
+						<li>Order/deliver dates <span>The delivery date for any order must be at least a
+							after order is made. We do not offer instant order deliveries.</span></li>
+					</ul>
+					<ul>
+						<!--<li><i class="glyphicon glyphicon-search" aria-hidden="true"></i></li>-->
+						<li>Non payment <span>An order is only considered a valid order when it had been
+							paid for. We do not accept payment on delivery.</span></li>
+					</ul>
+					<ul>
+						<!--<li><i class="glyphicon glyphicon-paste" aria-hidden="true"></i></li>-->
+						<li>Item not found <span>If one of the items in your order can not be
+                            sourced, we will inform you prior to delivery and return the cost equivalent
+                        of the item upon delivery.</span></li>
+					</ul>
+					<ul>
+						<!--<li><i class="glyphicon glyphicon-qrcode" aria-hidden="true"></i></li>-->
+
+						<li>Customer service<span>Upon due notice, we promise to do our best to support all
+                            legitimate customer complaints as a show of our commitment to quality service delivery.</span></li>
+					</ul>
+				</div>
+			</div>
+
+            <div class="privacy1">
+				<h3>Payments</h3>
+				<div class="banner-bottom-grid1 privacy2-grid">
+					<div class="privacy2-grid1">
+						<h4>Payment policy</h4>
+						<p>Our online transactions are handled by a registered payments gateway service provider.
+                        Should there be any related issues, we promise to offer our assistance promptly if required
+                        in order to help resolve such.</p>
+
+
+
+
+					</div>
+				</div>
+			</div>
+
+		</div>
+<!--policy-->
+		</div>
+		<div class="clearfix"></div>
+	</div>
+<!-- //banner -->
+
+<!-- Bootstrap Core JavaScript -->
+<script src="js/bootstrap.min.js"></script>
+<script>
+$(document).ready(function(){
+    $(".dropdown").hover(
+        function() {
+            $('.dropdown-menu', this).stop( true, true ).slideDown("fast");
+            $(this).toggleClass('open');
+        },
+        function() {
+            $('.dropdown-menu', this).stop( true, true ).slideUp("fast");
+            $(this).toggleClass('open');
+        }
+    );
+});
+</script>
+<!-- here stars scrolling icon -->
+	<script type="text/javascript">
+		$(document).ready(function() {
+			/*
+				var defaults = {
+				containerID: 'toTop', // fading element id
+				containerHoverID: 'toTopHover', // fading element hover id
+				scrollSpeed: 1200,
+				easingType: 'linear'
+				};
+			*/
+
+			$().UItoTop({ easingType: 'easeOutQuart' });
+
+			});
+	</script>
+<!-- //here ends scrolling icon -->
+<script src="js/minicart.js"></script>
+<script>
+		paypal.minicart.render();
+
+		paypal.minicart.cart.on('checkout', function (evt) {
+			var items = this.items(),
+				len = items.length,
+				total = 0,
+				i;
+
+			// Count the number of each item in the cart
+			for (i = 0; i < len; i++) {
+				total += items[i].get('quantity');
+			}
+
+			if (total < 3) {
+				alert('The minimum order quantity is 3. Please add more to your shopping cart before checking out');
+				evt.preventDefault();
+			}
+		});
+
+	</script>
+{% endblock %}

@@ -1,0 +1,27 @@
+
+
+{# items-results-partial.html #}
+{% if display %}
+    {% if not items == None %}
+     <!-- <ul class="search-results-ul w3-ul w3-hoverable"> -->
+        <table class="search-results w3-table w3-hoverable w3-bordered" >
+      {% for item in items %}
+       {#  <li class="search-results-li"> </li> #}
+
+        <tr>
+            <td>
+                <img src="{{ item.img.url }}" alt=" " class="img-responsive" style="max-width: 25px"/>
+
+            </td>
+            <td class="w3-left-align">
+               <a href="/item_details/{{ item.pk }}/"> {{ item.get_name }}</a>
+            </td>
+        </tr>
+
+      {% endfor %}
+          </table>
+
+    {% else %}
+      <p>No items found.</p>
+    {% endif %}
+{% endif %}

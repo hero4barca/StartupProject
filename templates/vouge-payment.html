@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+{% extends 'base.html' %}
+{% load static %}
+
+
+    <title>
+      {% block title %}
+       payment
+      {% endblock %}
+    </title>
+
+
+{% block midpage %}
+<!-- products-breadcrumb -->
+	<div class="products-breadcrumb">
+		<div class="container">
+			<ul>
+				<li><i class="fa fa-home" aria-hidden="true"></i><a href="/index/">Home</a><span>|</span></li>
+                {% if not item.category == Null%}
+				    <li><a href="/categories/{{item.category_id }}/"> category -  {{ item.category.get_name }}
+                {% else  %}
+                    <li><a href="/generic_items/"> category - other item (no category)
+                {% endif %} </a> <span>|</span> </li>
+                <li>{{ item.get_name }} </li>
+			</ul>
+		</div>
+	</div>
+<!-- //products-breadcrumb -->
+
+<!-- banner -->
+	<div class="banner">
+		<div class="w3l_banner_nav_left">
+			<nav class="navbar nav_bottom">
+			 <!-- Brand and toggle get grouped for better mobile display -->
+			  <div class="navbar-header nav_2">
+				  <button type="button" class="navbar-toggle collapsed navbar-toggle1" data-toggle="collapse" data-target="#bs-megadropdown-tabs">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				  </button>
+			   </div>
+			   <!-- Collect the nav links, forms, and other content for toggling -->
+
+				{% block navbar %}
+                    {{block.super }}
+                {% endblock %}
+
+			</nav>
+		</div>
+
+		<div class="w3l_banner_nav_right">
+
+            <div class="privacy about">
+			<h3>Pay<span>ment</span></h3>
+
+	            <div class="checkout-right">
+				<!--Horizontal Tab-->
+                <div id="parentHorizontalTab">
+
+                 <div class="resp-tabs-container hor_1">
+
+
+                 <div>
+                    <form method='POST' id='payform' action='//voguepay.com/pay/'>
+                        <input type='hidden' name='v_merchant_id' value='8971-0094990' />
+                        <input type='hidden' name='merchant_ref' value='234-567-890' />
+                        <input type='hidden' name='memo' value='Bulk order from McAckney Web Shop' />
+
+                        <!--Use notify url if you want a transaction response to be sent to the notify-->
+                        <!--Success and fail URL are not required if integration method is inline.-->
+                        <!--These are to be uses if you are using the form redirect method.-->
+                        <input type='hidden' name='notify_url' value="{{ notify }}" />
+                        <input type='hidden' name='success_url' value='{{ success }}' />
+                        <input type='hidden' name='fail_url' value='{{ fail }}' />
+
+                        <input type='hidden' name='developer_code' value='pq7778ehh9YbZ' />
+                        <input type='hidden' name='store_id' value='25' />
+
+                        <input type='hidden' name='total' value='{{ order.get_order_total }}' />
+
+                        <input type='hidden' name='name' value='{{ customer_name }}'/>
+                        <input type='hidden' name='address' value='{{ order.get_delivery_addr }}'/>
+                        <input type='hidden' name='city' value='Port-Harcourt City'/>
+                        <input type='hidden' name='state' value='Rivers State'/>
+                        <input type='hidden' name='zipcode' value='Customer Zip/Post Code'/>
+                        <input type='hidden' name='email' value='{{ order.get_buyer_email }}'/>
+                        <input type='hidden' name='phone' value= '{{ order.get_buyer_phone_no }} '/>
+
+                        <input type='image' src='//voguepay.com/images/buttons/buynow_blue.png' alt='Submit' />
+                    </form>
+
+                </div>
+
+            </div>
+        </div>
+
+	<!--Plug-in Initialisation-->
+
+	<!-- // Pay -->
+
+			 </div>
+
+		</div>
+
+
+		</div>
+		<div class="clearfix"></div>
+	</div>
+<!-- //banner -->
+
+<!-- Bootstrap Core JavaScript -->
+<script src="js/bootstrap.min.js"></script>
+<script>
+$(document).ready(function(){
+    $(".dropdown").hover(
+        function() {
+            $('.dropdown-menu', this).stop( true, true ).slideDown("fast");
+            $(this).toggleClass('open');
+        },
+        function() {
+            $('.dropdown-menu', this).stop( true, true ).slideUp("fast");
+            $(this).toggleClass('open');
+        }
+    );
+});
+</script>
+<!-- here stars scrolling icon -->
+	<script type="text/javascript">
+		$(document).ready(function() {
+			/*
+				var defaults = {
+				containerID: 'toTop', // fading element id
+				containerHoverID: 'toTopHover', // fading element hover id
+				scrollSpeed: 1200,
+				easingType: 'linear'
+				};
+			*/
+
+			$().UItoTop({ easingType: 'easeOutQuart' });
+
+			});
+	</script>
+<!-- //here ends scrolling icon -->
+<script src="js/minicart.js"></script>
+<script>
+		paypal.minicart.render();
+
+		paypal.minicart.cart.on('checkout', function (evt) {
+			var items = this.items(),
+				len = items.length,
+				total = 0,
+				i;
+
+			// Count the number of each item in the cart
+			for (i = 0; i < len; i++) {
+				total += items[i].get('quantity');
+			}
+
+			if (total < 3) {
+				alert('The minimum order quantity is 3. Please add more to your shopping cart before checking out');
+				evt.preventDefault();
+			}
+		});
+
+	</script>
+
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.11.0/themes/smoothness/jquery-ui.css">
+<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+<script src="http://code.jquery.com/ui/1.11.0/jquery-ui.js"></script>
+ <script>
+$(document).ready(function() {
+    $('.datepicker').datepicker({
+        dateFormat: "dd-mm-yy",
+        minDate: 2
+    });
+});
+</script>
+{% endblock %}

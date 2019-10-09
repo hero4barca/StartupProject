@@ -1,0 +1,281 @@
+{% extends 'index.html' %}
+{% load static %}
+
+
+    <title>
+        {% block title %}
+
+
+    contact us
+      {% endblock %}
+    </title>
+
+
+{% block midpage %}
+<!-- products-breadcrumb -->
+	<div class="products-breadcrumb">
+		<div class="container">
+			<ul>
+				<li><i class="fa fa-home" aria-hidden="true"></i><a href="/index/">Home</a><span>|</span></li>
+				<li> <a>Contact</a>  </li>
+			</ul>
+		</div>
+	</div>
+<!-- //products-breadcrumb -->
+<!-- banner -->
+	<div class="banner">
+		<div class="w3l_banner_nav_left">
+			<nav class="navbar nav_bottom">
+			 <!-- Brand and toggle get grouped for better mobile display -->
+			  <div class="navbar-header nav_2">
+				  <button type="button" class="navbar-toggle collapsed navbar-toggle1" data-toggle="collapse" data-target="#bs-megadropdown-tabs">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				  </button>
+			   </div>
+			   <!-- Collect the nav links, forms, and other content for toggling -->
+
+				{% block navbar %}
+                    {{block.super }}
+                {% endblock %}
+
+			</nav>
+		</div>
+
+		<div class="w3l_banner_nav_right">
+            <!-- mail -->
+
+            <div class="mail">
+			<h3>Contact Us</h3>
+			<div class="agileinfo_mail_grids">
+				<div class="col-md-4 agileinfo_mail_grid_left">
+					<ul>
+						<!--<li><i class="fa fa-home" aria-hidden="true"></i></li>-->
+						<li>address<span>{{ request.session.shop_address }} </span></li>
+					</ul>
+					<ul>
+						<!--<li><i class="fa fa-envelope" aria-hidden="true"></i></li>-->
+						<li>email<span><a href="mailto:marketwoman@gmail.com">marketwoman@gmail.com</a></span></li>
+					</ul>
+					<ul>
+						<!--<li><i class="fa fa-phone" aria-hidden="true"></i></li>-->
+						<li>phone<span>{{ request.session.shop_phoneNo }}</span></li>
+					</ul>
+				</div>
+				<div class="col-md-8 agileinfo_mail_grid_right">
+					<form action="/contact/" method="post">
+
+                        {% if errors|length > 0 %}
+                          <div class="errors">
+
+                             <ul>
+                              {% for error in errors  %}
+                                 <li> {{ error }}</li>
+                             {% endfor %}
+                             </ul>
+                          </div>
+
+                        {% endif %}
+						<div class="col-md-6 wthree_contact_left_grid">
+							<input type="text" name="Name" value="Name*" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'Name*';}" required="">
+							<input type="email" name="Email" value="Email*" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'Email*';}" required="">
+						</div>
+						<div class="col-md-6 wthree_contact_left_grid">
+							<input type="text" name="Telephone" value="Telephone*" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'Telephone*';}" required="">
+							<input type="text" name="Subject" value="Subject*" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'Subject*';}" required="">
+						</div>
+						<div class="clearfix"> </div>
+						<textarea  name="Message" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'Message...';}" required="">Message...</textarea>
+						<input type="submit" value="Submit">
+                        {% csrf_token %}
+						<input type="reset" value="Clear">
+					</form>
+				</div>
+				<div class="clearfix"> </div>
+			</div>
+		</div>
+
+		</div>
+		<div class="clearfix"></div>
+	</div>
+<!-- //banner -->
+<!-- team -->
+    <!--**************************COMMENT OUT TEAM TILL NEEDED
+	<div class="team">
+		<div class="container">
+			<h3>Meet Our Amazing Team</h3>
+			<div class="agileits_team_grids">
+				<div class="col-md-3 agileits_team_grid">
+					<img src="images/32.jpg" alt=" " class="img-responsive" />
+					<h4>Martin Paul</h4>
+					<p>Manager</p>
+					<ul class="agileits_social_icons agileits_social_icons_team">
+						<li><a href="#" class="facebook"><i class="fa fa-facebook" aria-hidden="true"></i></a></li>
+						<li><a href="#" class="twitter"><i class="fa fa-twitter" aria-hidden="true"></i></a></li>
+						<li><a href="#" class="google"><i class="fa fa-google-plus" aria-hidden="true"></i></a></li>
+					</ul>
+				</div>
+				<div class="col-md-3 agileits_team_grid">
+					<img src="images/33.jpg" alt=" " class="img-responsive" />
+					<h4>Michael Rick</h4>
+					<p>Supervisor</p>
+					<ul class="agileits_social_icons agileits_social_icons_team">
+						<li><a href="#" class="facebook"><i class="fa fa-facebook" aria-hidden="true"></i></a></li>
+						<li><a href="#" class="twitter"><i class="fa fa-twitter" aria-hidden="true"></i></a></li>
+						<li><a href="#" class="google"><i class="fa fa-google-plus" aria-hidden="true"></i></a></li>
+					</ul>
+				</div>
+				<div class="col-md-3 agileits_team_grid">
+					<img src="images/34.jpg" alt=" " class="img-responsive" />
+					<h4>Thomas Carl</h4>
+					<p>Supervisor</p>
+					<ul class="agileits_social_icons agileits_social_icons_team">
+						<li><a href="#" class="facebook"><i class="fa fa-facebook" aria-hidden="true"></i></a></li>
+						<li><a href="#" class="twitter"><i class="fa fa-twitter" aria-hidden="true"></i></a></li>
+						<li><a href="#" class="google"><i class="fa fa-google-plus" aria-hidden="true"></i></a></li>
+					</ul>
+				</div>
+				<div class="col-md-3 agileits_team_grid">
+					<img src="images/35.jpg" alt=" " class="img-responsive" />
+					<h4>Laura Lee</h4>
+					<p>CEO</p>
+					<ul class="agileits_social_icons agileits_social_icons_team">
+						<li><a href="#" class="facebook"><i class="fa fa-facebook" aria-hidden="true"></i></a></li>
+						<li><a href="#" class="twitter"><i class="fa fa-twitter" aria-hidden="true"></i></a></li>
+						<li><a href="#" class="google"><i class="fa fa-google-plus" aria-hidden="true"></i></a></li>
+					</ul>
+				</div>
+				<div class="clearfix"> </div>
+			</div>
+		</div>
+	</div>
+<!-- //team -->
+<!-- testimonials -->
+<!-- *****************************COMMENT OUT TESTIMONIALS TILL NEEDED
+	<div class="testimonials">
+		<div class="container">
+			<h3>Testimonials</h3>
+				<div class="w3_testimonials_grids">
+					<div class="wmuSlider example1 animated wow slideInUp" data-wow-delay=".5s">
+						<div class="wmuSliderWrapper">
+							<article style="position: absolute; width: 100%; opacity: 0;">
+								<div class="banner-wrap">
+									<div class="col-md-6 w3_testimonials_grid">
+										<p><i class="fa fa-quote-right" aria-hidden="true"></i>Itaque earum rerum hic tenetur a sapiente delectus, ut aut reiciendis
+											voluptatibus maiores alias consequatur aut perferendis doloribus asperiores
+											repellat.</p>
+										<h4>Andrew Smith <span>Customer</span></h4>
+									</div>
+									<div class="col-md-6 w3_testimonials_grid">
+										<p><i class="fa fa-quote-right" aria-hidden="true"></i>Itaque earum rerum hic tenetur a sapiente delectus, ut aut reiciendis
+											voluptatibus maiores alias consequatur aut perferendis doloribus asperiores
+											repellat.</p>
+										<h4>Thomson Richard <span>Customer</span></h4>
+									</div>
+									<div class="clearfix"> </div>
+								</div>
+							</article>
+							<article style="position: absolute; width: 100%; opacity: 0;">
+								<div class="banner-wrap">
+									<div class="col-md-6 w3_testimonials_grid">
+										<p><i class="fa fa-quote-right" aria-hidden="true"></i>Itaque earum rerum hic tenetur a sapiente delectus, ut aut reiciendis
+											voluptatibus maiores alias consequatur aut perferendis doloribus asperiores
+											repellat.</p>
+										<h4>Crisp Kale <span>Customer</span></h4>
+									</div>
+									<div class="col-md-6 w3_testimonials_grid">
+										<p><i class="fa fa-quote-right" aria-hidden="true"></i>Itaque earum rerum hic tenetur a sapiente delectus, ut aut reiciendis
+											voluptatibus maiores alias consequatur aut perferendis doloribus asperiores
+											repellat.</p>
+										<h4>John Paul <span>Customer</span></h4>
+									</div>
+									<div class="clearfix"> </div>
+								</div>
+							</article>
+							<article style="position: absolute; width: 100%; opacity: 0;">
+								<div class="banner-wrap">
+									<div class="col-md-6 w3_testimonials_grid">
+										<p><i class="fa fa-quote-right" aria-hidden="true"></i>Itaque earum rerum hic tenetur a sapiente delectus, ut aut reiciendis
+											voluptatibus maiores alias consequatur aut perferendis doloribus asperiores
+											repellat.</p>
+										<h4>Rosy Carl <span>Customer</span></h4>
+									</div>
+									<div class="col-md-6 w3_testimonials_grid">
+										<p><i class="fa fa-quote-right" aria-hidden="true"></i>Itaque earum rerum hic tenetur a sapiente delectus, ut aut reiciendis
+											voluptatibus maiores alias consequatur aut perferendis doloribus asperiores
+											repellat.</p>
+										<h4>Rockson Doe <span>Customer</span></h4>
+									</div>
+									<div class="clearfix"> </div>
+								</div>
+							</article>
+						</div>
+					</div>
+					<script src="js/jquery.wmuSlider.js"></script>
+					<script>
+						$('.example1').wmuSlider();
+					</script>
+				</div>
+		</div>
+	</div>
+-->
+<!-- //testimonials -->
+
+<!-- Bootstrap Core JavaScript -->
+<script src="js/bootstrap.min.js"></script>
+<script>
+$(document).ready(function(){
+    $(".dropdown").hover(
+        function() {
+            $('.dropdown-menu', this).stop( true, true ).slideDown("fast");
+            $(this).toggleClass('open');
+        },
+        function() {
+            $('.dropdown-menu', this).stop( true, true ).slideUp("fast");
+            $(this).toggleClass('open');
+        }
+    );
+});
+</script>
+<!-- here stars scrolling icon -->
+	<script type="text/javascript">
+		$(document).ready(function() {
+			/*
+				var defaults = {
+				containerID: 'toTop', // fading element id
+				containerHoverID: 'toTopHover', // fading element hover id
+				scrollSpeed: 1200,
+				easingType: 'linear'
+				};
+			*/
+
+			$().UItoTop({ easingType: 'easeOutQuart' });
+
+			});
+	</script>
+<!-- //here ends scrolling icon -->
+<script src="js/minicart.js"></script>
+<script>
+		paypal.minicart.render();
+
+		paypal.minicart.cart.on('checkout', function (evt) {
+			var items = this.items(),
+				len = items.length,
+				total = 0,
+				i;
+
+			// Count the number of each item in the cart
+			for (i = 0; i < len; i++) {
+				total += items[i].get('quantity');
+			}
+
+			if (total < 3) {
+				alert('The minimum order quantity is 3. Please add more to your shopping cart before checking out');
+				evt.preventDefault();
+			}
+		});
+
+	</script>
+{% endblock %}

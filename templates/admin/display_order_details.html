@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+
+
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block title %}Show order details{% endblock %}
+
+{% block extrastyle %}
+    {{ block.super }}
+
+<!-- myCss stylesheet-->
+<link rel="stylesheet" href=" {% static "css/myCss.css" %} " />
+<!--// myCss stylesheet-->
+{% endblock %}
+
+{% block extrahead %}
+    {{ block.super }}
+
+{% endblock %}
+
+{% block branding %}
+<h1 id="site-name"><a href="{% url 'admin:index' %}"> Market Woman Administration</a></h1>
+{% endblock %}
+
+{% block content %}
+    <div id="main-content">
+
+    {% if bought_items == None %}
+        <p> No order items to display  </p>
+
+        {% elif order == None %}
+        <p> This order is not valid</p>
+
+        {% else %}
+
+        <div class="">
+                <p> <span class="details-underline">Customer Name:  </span>{{ order.get_buyer_firstname }}
+                    &nbsp; {{ order.get_buyer_lastname}}
+                            {% if order.get_buyer_gender == 'male'  %} (Mr.) {% else %} (Mrs.){% endif %}</p>
+                <p><span class="details-underline">Email:</span> {{ order.get_buyer_email }} </p>
+                <p> <span class="details-underline">Tel No:</span>  {{ order.get_buyer_phone_no}} </p>
+                <p> <span class="details-underline">Order delivery date: </span> {{ order.get_delivery_date }}</p>
+                <p> <span class="details-underline"> Delivery address: </span> {{ order.delivery_addr}}</p>
+                <p> <span class="details-underline"> Order date: </span> {{ order.get_order_date }} : {{ order.get_order_time }}</p>
+            </div>
+
+    {% endif %}
+
+
+
+
+              <table class=" ">
+                <thead>
+                    <tr>
+                        <th> No.</th>
+                        <th>Name(qty): description</th>
+                        <th>Price* qty</th>
+                    </tr>
+                </thead>
+                  {% for item in bought_items %}
+                 <tbody>
+                  <tr>
+                      <td>
+                      {{ forloop.counter }}
+                  </td>
+                  <td>
+                      {{ item.item.get_name }}({{ item.get_quantity }}) : {{ item.get_order_item_desc }}
+                  </td>
+                    <td>
+                  {{ item.get_order_item_price }} * {{ item.get_quantity }} = {{ item.get_price_by_qty }}
+                    </td>
+                  </tr>
+                  {% endfor %}
+
+               <tr class="service_charge">
+               <td> - </td>
+               <td> Service charge</td>
+                {% load humanize %}
+               <td> {{order.get_service_charge |floatformat:2|intcomma }}</td>
+               </tr>
+                <tr class="total">
+                <td> - </td>
+                <td> Final Total</td>
+                <td> {{ order.get_order_total|floatformat:2|intcomma }}</td>
+                </tr>
+              </tbody>
+              </table>
+
+    <div class="">
+        <br/>
+        <form>
+            {% csrf_token %}
+    <input type="button" value=" Back" onclick="history.back()">
+    </form>
+    </div>
+
+    </div>
+
+{% endblock %}

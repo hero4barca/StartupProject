@@ -1,0 +1,229 @@
+{% extends 'index.html' %}
+{% load static %}
+
+
+    <title>
+      {% block title %}
+        items details
+      {% endblock %}
+    </title>
+
+
+{% block midpage %}
+<!-- products-breadcrumb -->
+	<div class="products-breadcrumb">
+		<div class="container">
+			<ul>
+				<li><i class="fa fa-home" aria-hidden="true"></i><a href="/index/">Home</a><span>|</span></li>
+                <li> <a href="/categories/"> Categories</a> <span>|</span></li>
+                {% if not item.category == Null%}
+				    <li><a href="/categories/{{item.category_id }}/">  {{ item.category.get_name }}
+                {% else  %}
+                    <li><a href="/generic_items/">other items (no category)
+                {% endif %} </a> <span>|</span> </li>
+                <li> <a>{{ item.get_name }}</a> </li>
+			</ul>
+		</div>
+	</div>
+<!-- //products-breadcrumb -->
+
+<!-- banner -->
+	<div class="banner">
+		<div class="w3l_banner_nav_left">
+			<nav class="navbar nav_bottom">
+			 <!-- Brand and toggle get grouped for better mobile display -->
+			  <div class="navbar-header nav_2">
+				  <button type="button" class="navbar-toggle collapsed navbar-toggle1" data-toggle="collapse" data-target="#bs-megadropdown-tabs">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				  </button>
+			   </div>
+			   <!-- Collect the nav links, forms, and other content for toggling -->
+
+				{% block navbar %}
+                    {{block.super }}
+                {% endblock %}
+
+			</nav>
+		</div>
+
+		<div class="w3l_banner_nav_right">
+
+
+            <div class="agileinfo_single">
+              {%  if not item == None %}
+				<h5>{{ item.get_name }}</h5>
+				<div class="col-md-4 agileinfo_single_left">
+					<img id="example" src="{{ item.img.url }}" alt=" " class="img-responsive" />
+				</div>
+				<div class="col-md-8 agileinfo_single_right">
+					<div class="rating1">
+						<span class="starRating">
+							<input id="rating5" type="radio" name="rating" value="5">
+							<label for="rating5">5</label>
+							<input id="rating4" type="radio" name="rating" value="4">
+							<label for="rating4">4</label>
+							<input id="rating3" type="radio" name="rating" value="3" checked>
+							<label for="rating3">3</label>
+							<input id="rating2" type="radio" name="rating" value="2">
+							<label for="rating2">2</label>
+							<input id="rating1" type="radio" name="rating" value="1">
+							<label for="rating1">1</label>
+						</span>
+					</div>
+					<div class="w3agile_description">
+						<h4>Description :</h4>
+						<p>{{ item.get_description }}</p>
+                        {% if item.get_discounted_price %}
+                            <p>currently on offer at a discounted price of {{ item.get_discounted_price }}</p>
+                        {% endif %}
+
+					</div>
+					<div class="snipcart-item block">
+						<div class="snipcart-thumb agileinfo_single_right_snipcart">
+                            {% load humanize %}
+                            {% if item.discounted_price %}
+							<h4>${{ item.get_discounted_price|floatformat:2|intcomma }}<span>${{ item.get_price|floatformat:2|intcomma }}</span></h4>
+                            {% else %}
+                                <h4>${{ item.get_price|floatformat:2|intcomma }}</h4>
+                            {% endif %}
+						</div>
+						<div class="snipcart-details agileinfo_single_right_details">
+							<form action="/add_order_item/" method="post">
+								<fieldset style="height: 90%; border: none;">
+									<input type="hidden" name="cmd" value="_cart" />
+									<input type="hidden" name="add" value="1" />
+
+									<input type="hidden" name="name" value="{{ item.get_name }}" />
+									<input type="hidden" name="price"
+                                           {% if not item.get_discounted_price == 0 %}
+                                           value="{{ item.get_discounted_price }}"
+                                            {% else %}
+                                            value ="{{ item.get_price }}"
+                                            {% endif %}/>
+									<input type="hidden" name="discount_price" value="{{ item.get_discounted_price }}" />
+                                    <input type="hidden" name="itemID" value="{{ item.pk }}"/>
+									<input type="hidden" name="currency_code" value="NAIRA" />
+									<input type="hidden" name="return" value=" " />
+									<input type="hidden" name="cancel_return" value=" " />
+
+                                    <!--  market measure selection-->
+                                    {% if measure %}
+                                        <label for="measure"> Measure(optional)</label>
+                                        <select class="w3-select" name="measure">
+                                        <option value="" > choose measure</option>
+                                        {% for option in measure %}
+                                            <option value="{{ option.get_name }}">{{ option.get_description }}({{ option.get_price }})</option>
+
+                                        {% endfor %}
+                                        </select>
+                                    {% endif %}
+
+                                    <!-- presentation-->
+                                    {% if presentation %}
+                                        <label for="presentation">Presentation(optional)</label>
+                                        <select class="w3-select" name="presentation">
+                                        <option value="">choose presentation  </option>
+                                        {% for option in presentation %}
+                                            <option value="{{ option.get_name }}">{{ option.get_description}}</option>
+                                        {% endfor %}
+                                        </select>
+                                    {% endif %}
+                                </fieldset>
+                                <fieldset style="height:53.5px">
+
+
+                                    {% if item.availability %}
+									    <input type="submit" name="submit" value="Add to cart" class="button" />
+                                    {% else %}
+                                        <input type="submit" disabled value="No Stock" class="button" style="color: black; background: grey"/>
+                                    {% endif %}
+                                    {%  csrf_token%}
+								</fieldset>
+							</form>
+						</div>
+
+					</div>
+				</div>
+              {% else  %} <p class="invalid_error"> invalid item selection</p>
+            {% endif %}
+
+				<div class="clearfix"> </div>
+			</div>
+
+
+		</div>
+		<div class="clearfix"></div>
+	</div>
+<!-- //banner -->
+
+<!-- Bootstrap Core JavaScript -->
+<script src="js/bootstrap.min.js"></script>
+<script>
+$(document).ready(function(){
+    $(".dropdown").hover(
+        function() {
+            $('.dropdown-menu', this).stop( true, true ).slideDown("fast");
+            $(this).toggleClass('open');
+        },
+        function() {
+            $('.dropdown-menu', this).stop( true, true ).slideUp("fast");
+            $(this).toggleClass('open');
+        }
+    );
+});
+</script>
+<!-- here stars scrolling icon -->
+	<script type="text/javascript">
+		$(document).ready(function() {
+			/*
+				var defaults = {
+				containerID: 'toTop', // fading element id
+				containerHoverID: 'toTopHover', // fading element hover id
+				scrollSpeed: 1200,
+				easingType: 'linear'
+				};
+			*/
+
+			$().UItoTop({ easingType: 'easeOutQuart' });
+
+			});
+	</script>
+<!-- //here ends scrolling icon -->
+<script src="js/minicart.js"></script>
+<script>
+		paypal.minicart.render();
+
+		paypal.minicart.cart.on('checkout', function (evt) {
+			var items = this.items(),
+				len = items.length,
+				total = 0,
+				i;
+
+			// Count the number of each item in the cart
+			for (i = 0; i < len; i++) {
+				total += items[i].get('quantity');
+			}
+
+			if (total < 3) {
+				alert('The minimum order quantity is 3. Please add more to your shopping cart before checking out');
+				evt.preventDefault();
+			}
+		});
+
+	</script>
+
+  <script src='{% static "js/okzoom.js" %} '></script>
+  <script>
+    $(function(){
+      $('#example').okzoom({
+        width: 150,
+        height: 150,
+        border: "1px solid black",
+        shadow: "0 0 5px #000"
+      });
+    });
+  </script>
+{% endblock %}

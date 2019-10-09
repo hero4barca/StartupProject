@@ -1,0 +1,74 @@
+
+
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block title %}Show daily orders{% endblock %}
+
+{% block extrastyle %}
+    {{ block.super }}
+
+<!-- myCss stylesheet-->
+<link rel="stylesheet" href=" {% static "css/myCss.css" %} " />
+<!--// myCss stylesheet-->
+{% endblock %}
+
+{% block extrahead %}
+    {{ block.super }}
+
+{% endblock %}
+
+{% block branding %}
+<h1 id="site-name"><a href="{% url 'admin:index' %}"> Market Woman Administration</a></h1>
+{% endblock %}
+
+{% block content %}
+<div id="content-main">
+<h1>Customer Orders for {{ date }}</h1>
+{%  if date_error %}
+    <p> The date input is incorrect</p>
+    {% elif orders|length < 1 %}
+
+    <p> There are no customers orders for the selected date</p>
+
+    {% else %}
+    <table>
+        <thead>
+        <th></th>
+        <th> Name </th>
+        <th> Phone No.</th>
+        <th>Delivery Address </th>
+        <th> Order Total</th>
+        <th> Order Date</th>
+        <th> Order File</th>
+        </thead>
+
+        {% for order in orders %}
+            <tr >
+            <td class="order-table-link"> <a href="/admin/customer_orders/details/{{order.id}}/"> {{ forloop.counter }}</a></td>
+            <td> {{ order.buyer_firstname }} {{ order.buyer_lastname }}</td>
+            <td>{{ order.buyer_phone_no }}</td>
+            <td> {{ order.get_delivery_addr }}</td>
+                {% load humanize %}
+            <td> {{ order.get_order_total|floatformat:2|intcomma }}</td>
+            <td> {{ order.get_order_date }}</td>
+            <td> <a href="/admin/download_single_order/{{ order.id }}/"> download </a></td>
+
+            </tr>
+        {% endfor %}
+    </table>
+
+    <!--
+    <div id="download-all-link">
+    <a href="/admin/customer_orders/print_all//"> download all orders</a>
+    </div> -->
+
+    <div id="show-aggregate-link">
+    <a href="/admin/customer_orders/items_by_day/{{ date }}/"> download aggregated orders</a>
+    </div>
+{% endif %}
+
+</div>
+
+
+{% endblock %}

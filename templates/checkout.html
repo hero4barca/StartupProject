@@ -1,0 +1,279 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+    <title>
+      {% block title %}
+         checkout
+      {% endblock %}
+    </title>
+
+
+{% block midpage %}
+<!-- products-breadcrumb -->
+	<div class="products-breadcrumb">
+		<div class="container">
+			<ul>
+				<li><i class="fa fa-home" aria-hidden="true"></i><a href="/index/">Home</a><span>|</span></li>
+
+                <li><a> Checkout</a></li>
+			</ul>
+		</div>
+	</div>
+<!-- //products-breadcrumb -->
+
+<!-- banner -->
+	<div class="banner">
+		<div class="w3l_banner_nav_left">
+			<nav class="navbar nav_bottom">
+			 <!-- Brand and toggle get grouped for better mobile display -->
+			  <div class="navbar-header nav_2">
+				  <button type="button" class="navbar-toggle collapsed navbar-toggle1" data-toggle="collapse" data-target="#bs-megadropdown-tabs">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				  </button>
+			   </div>
+			   <!-- Collect the nav links, forms, and other content for toggling -->
+
+				{% block navbar %}
+                    {{block.super }}
+                {% endblock %}
+
+			</nav>
+		</div>
+
+		<div class="w3l_banner_nav_right">
+
+
+            <div class="privacy about">
+			<h3>Chec<span>kout</span></h3>
+
+	      <div class="checkout-right">
+
+					<h4>Your shopping cart contains: <span>{{ request.session.items_in_order|length }} Products</span></h4>
+				<table class="timetable_sub">
+					<thead>
+						<tr>
+							<th>No.</th>
+							<th>Product</th>
+							<th>Quantity</th>
+							<th style="max-width: 300px; ">Name: Description</th>
+
+							<th>Price</th>
+							<th>Remove</th>
+						</tr>
+					</thead>
+					<tbody>
+                    {% for item in request.session.items_in_order %}
+                        <tr class="rem1">
+
+						<td class="invert">{{ forloop.counter }}</td>
+						<td class="invert-image"> <img src="{{ item.img }}" alt=" " class="img-responsive" style="max-width: 155px;"></td>
+						<td class="invert">
+							 <div class="quantity">
+								<div class="quantity-select">
+									<a href="/qty_minus/{{ item.name }}/"><div class="entry value-minus"> &nbsp;</div></a>
+									<div class="entry value"><span>{{ item.qty }}</span></div>
+									<a href="/qty_plus/{{ item.name}}/"><div class="entry value-plus active"> &nbsp;</div></a>
+								</div>
+							</div>
+						</td>
+						<td class="invert" style="max-width: 300px; ">{{ item.name }}: {{ item.description }}</td>
+                            {% load humanize %}
+						<td class="invert">{{ item.price|floatformat:2|intcomma }} x ({{ item.qty }})</td>
+						<td class="invert">
+							<div class="rem">
+                                <a href="/remove_order_item/{{item.name}}/">
+								<div class="close1"> </div>
+                                </a>
+							</div>
+
+						</td>
+					</tr>
+                    {% endfor %}
+                    {% if request.session.items_in_order %}
+
+                    <tr>
+                        <td class="total"> </td>
+                        <td colspan="3" class="invert" style="text-align: right"> Total:</td>
+                        <td colspan="2"> {{ request.session.current_total |floatformat:2|intcomma }}</td>
+
+                    </tr>
+                    {% endif %}
+
+
+				</tbody></table>
+                <p> **** There is a service charge of {{ request.session.service_charge }}</p>
+			</div>
+			<div class="checkout-left">
+
+				<div class="col-md-4 checkout-left-basket">
+					<h4>Order Policy</h4>
+					<ul>
+						<li>Delivery date - at the earliest must be a day after order is made </li>
+                        <li>We d not make deliveries on sundays</li>
+						<li>'Payment on delivery' is not accepted, all orders must be paid for before delivery</li>
+						<li>Cost of items that could not be sourced will be refunded on delivery</li>
+
+					</ul>
+				</div>
+				<div class="col-md-8 address_form_agile">
+					  <h4>Customer Details</h4>
+				<form action="/order/checkout/" method="post" class="creditly-card-form agileinfo_form">
+									<section class="creditly-wrapper wthree, w3_agileits_wrapper">
+										<div class="information-wrapper">
+											<div class="first-row form-group">
+												<div class="controls">
+                                                    {{ form.firstname.errors }}
+                                                    <label class="control-label">Firstname: </label>
+													{{ form.firstname }} <br/> <br/>
+												</div>
+
+                                                <div class="controls">
+                                                    {{ form.lastname.errors }}
+													<label class="control-label">Lastname: </label>
+													{{ form.lastname }}<br/> <br/>
+												</div>
+                                                <div>
+                                                        {{ form.gender.errors }}
+                                                    <label class="control-label">Gender: </label>
+                                                        {{ form.gender }} <br/> <br/>
+                                                    </div>
+
+												<div class="w3_agileits_card_number_grids">
+													<div class="w3_agileits_card_number_grid_left">
+														<div class="controls">
+                                                            {{ form.phonenumber.errors }}
+															<label class="control-label">Mobile number:</label>
+														    {{ form.phonenumber }}<br/> <br/>
+														</div>
+													</div>
+                                                    <div>
+                                                        {{ form.email.errors }}
+                                                       <!-- <label class="control-label">Email: </label>-->
+                                                        {{ form.email }}<br/> <br/>
+                                                    </div>
+
+                                                    <div>
+                                                        {{ form.delivery_address.errors }}
+                                                        <label class="control-label">Delivery address: </label><br/>
+                                                        {{ form.delivery_address }}<br/> <br/>
+                                                    </div>
+                                                    <div>
+                                                        {{ form.delivery_date.errors }}
+                                                        <label class="control-label">Select delivery date: (No Sundays!) </label>
+                                                      {{ form.delivery_date }}
+
+                                                    </div> <br/> <br/>
+
+
+                                                    <!--
+													<div class="w3_agileits_card_number_grid_right">
+														<div class="controls">
+															<label class="control-label">Landmark: </label>
+														 <input class="form-control" type="text" placeholder="Landmark">
+														</div>
+													</div>-->
+
+													<div class="clear"> </div>
+												</div>
+
+													<div class="controls">
+                                                        {{ form.address_type.errors }}
+															<label class="control-label">Address type: </label>
+												            {{ form.address_type }} <br/> <br/>
+													</div>
+											</div>
+                                            {% csrf_token %}
+											<button class="submit check_out"  {% if not request.session.items_in_order %} disabled {% endif %}>
+                                                Proceed to Payment</button>
+										</div>
+									</section>
+								</form>
+
+
+					</div>
+
+				<div class="clearfix"> </div>
+
+			</div>
+
+		</div>
+
+
+		</div>
+		<div class="clearfix"></div>
+	</div>
+<!-- //banner -->
+
+<!-- Bootstrap Core JavaScript -->
+<script src="js/bootstrap.min.js"></script>
+<script>
+$(document).ready(function(){
+    $(".dropdown").hover(
+        function() {
+            $('.dropdown-menu', this).stop( true, true ).slideDown("fast");
+            $(this).toggleClass('open');
+        },
+        function() {
+            $('.dropdown-menu', this).stop( true, true ).slideUp("fast");
+            $(this).toggleClass('open');
+        }
+    );
+});
+</script>
+<!-- here stars scrolling icon -->
+	<script type="text/javascript">
+		$(document).ready(function() {
+			/*
+				var defaults = {
+				containerID: 'toTop', // fading element id
+				containerHoverID: 'toTopHover', // fading element hover id
+				scrollSpeed: 1200,
+				easingType: 'linear'
+				};
+			*/
+
+			$().UItoTop({ easingType: 'easeOutQuart' });
+
+			});
+	</script>
+<!-- //here ends scrolling icon -->
+<script src="js/minicart.js"></script>
+<script>
+		paypal.minicart.render();
+
+		paypal.minicart.cart.on('checkout', function (evt) {
+			var items = this.items(),
+				len = items.length,
+				total = 0,
+				i;
+
+			// Count the number of each item in the cart
+			for (i = 0; i < len; i++) {
+				total += items[i].get('quantity');
+			}
+
+			if (total < 3) {
+				alert('The minimum order quantity is 3. Please add more to your shopping cart before checking out');
+				evt.preventDefault();
+			}
+		});
+
+	</script>
+
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.11.0/themes/smoothness/jquery-ui.css">
+<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+<script src="http://code.jquery.com/ui/1.11.0/jquery-ui.js"></script>
+ <script>
+$(document).ready(function() {
+    $('.datepicker').datepicker({
+        beforeShowDay: function(dt){ return [dt.getDay() == 0 ? false : true ];},
+        dateFormat: "dd-mm-yy",
+        minDate: 1
+    });
+});
+</script>
+{% endblock %}
