@@ -58,27 +58,34 @@ urlpatterns = [
     re_path(r'^item_details/(\d+)/$', item_details ), # displays detailed item page
 
     path('add_order_item/', add_order_item),# add an item to shopping cart
-    path('remove_order_item/<str:name>/', remove_order_item), # removes item from shopping cart
+    path('remove_order_item/<str:name>/<str:description>/', remove_order_item), # removes item from shopping cart
 
     path('sign_up/', register_customer), # reigister's customer
 
     path('login/',auth_views.LoginView.as_view(template_name='login.html'), name='login'),#login
     path('accounts/profile/', user_account ),# redirect to create user sessions after successful login
     path('logout/', auth_views.LogoutView.as_view(next_page='/index/')),# logout
+    path('accounts/customer/', customer_account),# customer account page to display customer transactions
 
-    path('password_reset/', password_reset),
-    path('change_password/<int:user_id>/<int:profile_id>/<int:customer_id>/', change_password),
-    path('update_password/', update_password),
+    #for password reset calls
+    re_path('^', include('django.contrib.auth.urls')),
 
     path('order/checkout/', checkout),# for checkout of items: allows editing (qty) and removing items
-    path('qty_minus/<str:item_name>/', reduce_item_qty),
-    path('qty_plus/<str:item_name>/', add_item_qty),
+    path('qty_minus/<str:name>/<str:description>/', reduce_item_qty),
+    path('qty_plus/<str:name>/<str:description>/', increase_item_qty),
 
     path('order/confirm_details/', confirm_order_details),# displays all order details for cnfirmation by user
     path('order/payment/', make_payment),# to payment page
+
+    #******* Needed?
     path('order/save_order/', create_new_order),
+
     path('order/show_receipt/', show_order_receipt),
     path('order/download_receipt/', single_orderPDF ),
+
+    #per Cash Envoy
+    path('order/payment2/',make_payment2),
+    path('order/payment_complete/', payment_complete),
 
     #****Vouge Pay integrating URLS
     #path('order/payment/', make_payment1),# to payment page

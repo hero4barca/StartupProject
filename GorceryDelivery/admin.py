@@ -44,7 +44,7 @@ class MyAdminSite(AdminSite):
         """
         View function: allows displays of all order given a specific delivery date
         :param request: Http request
-        :return: Http redirect to display page; if method is not 'POST', renders delivery date form 
+        :return: Http redirect to display page; if method is not 'POST', renders delivery date form
         """
 
         if request.method == 'POST':
@@ -106,7 +106,7 @@ class MyAdminSite(AdminSite):
         bought_items = OrderItems.objects.filter(order=order_details)
 
         if not bought_items == None:
-            the_report = PDFGenerator(order_details, bought_items)
+            the_report = PDFGenerator(request,order_details, bought_items)
             return the_report.download_user_order()
 
 
@@ -116,7 +116,7 @@ class MyAdminSite(AdminSite):
         View function: displays the details of a selected custmer order
         :param request: Http request
         :param order_id: pk of the selected order
-        :return: renders the details 
+        :return: renders the details
         """
 
         order_details = None
@@ -218,16 +218,16 @@ class AdminSalesMeasure(admin.ModelAdmin):
 
 
 
-@admin.register(Presentation, site =admin_site)
+@admin.register(Presentation, site = admin_site)
 class AdminPresentation(admin.ModelAdmin):
     list_per_page = 10
     list_display = ('name', 'description', 'item')
 
 
 
-@admin.register(Payment, site =admin_site)
+@admin.register(Payment, site = admin_site)
 class AdminPayment(admin.ModelAdmin):
-    list_display = ('description', 'payment_type', 'timestamp', 'token_identifier', 'order')
+    list_display = ('order', 'timestamp', 'transaction_reference', 'status','description' )
     list_per_page = 10
 
 

@@ -4,7 +4,7 @@
 
     <title>
       {% block title %}
-        items details
+        item details
       {% endblock %}
     </title>
 
@@ -91,20 +91,22 @@
                             {% endif %}
 						</div>
 						<div class="snipcart-details agileinfo_single_right_details">
-							<form action="/add_order_item/" method="post">
+
+							<!--<form action="/add_order_item/" method="post">-->
+                            <form  id="item-form">
 								<fieldset style="height: 90%; border: none;">
 									<input type="hidden" name="cmd" value="_cart" />
 									<input type="hidden" name="add" value="1" />
 
 									<input type="hidden" name="name" value="{{ item.get_name }}" />
-									<input type="hidden" name="price"
+									<input id="item_price" type="hidden" name="price"
                                            {% if not item.get_discounted_price == 0 %}
                                            value="{{ item.get_discounted_price }}"
                                             {% else %}
                                             value ="{{ item.get_price }}"
                                             {% endif %}/>
-									<input type="hidden" name="discount_price" value="{{ item.get_discounted_price }}" />
-                                    <input type="hidden" name="itemID" value="{{ item.pk }}"/>
+
+                                    <input type="hidden" id="item_id" name="itemID" value="{{ item.pk }}"/>
 									<input type="hidden" name="currency_code" value="NAIRA" />
 									<input type="hidden" name="return" value=" " />
 									<input type="hidden" name="cancel_return" value=" " />
@@ -136,6 +138,7 @@
 
 
                                     {% if item.availability %}
+                                       <!-- <button onclick="addToCart()"> add item</button> -->
 									    <input type="submit" name="submit" value="Add to cart" class="button" />
                                     {% else %}
                                         <input type="submit" disabled value="No Stock" class="button" style="color: black; background: grey"/>
@@ -190,30 +193,10 @@ $(document).ready(function(){
 			$().UItoTop({ easingType: 'easeOutQuart' });
 
 			});
+
 	</script>
 <!-- //here ends scrolling icon -->
-<script src="js/minicart.js"></script>
-<script>
-		paypal.minicart.render();
 
-		paypal.minicart.cart.on('checkout', function (evt) {
-			var items = this.items(),
-				len = items.length,
-				total = 0,
-				i;
-
-			// Count the number of each item in the cart
-			for (i = 0; i < len; i++) {
-				total += items[i].get('quantity');
-			}
-
-			if (total < 3) {
-				alert('The minimum order quantity is 3. Please add more to your shopping cart before checking out');
-				evt.preventDefault();
-			}
-		});
-
-	</script>
 
   <script src='{% static "js/okzoom.js" %} '></script>
   <script>
@@ -226,4 +209,31 @@ $(document).ready(function(){
       });
     });
   </script>
+
+    <script type="text/javascript">
+
+    $(document).on('submit', '#item-form', function(event){
+
+        event.preventDefault();
+
+
+        $.ajax({
+            type: "POST",
+            url: "/add_order_item/",
+            data: {
+                csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+                itemID: $('#item_id').val(),
+                price: $('#item_price').val()
+            },
+
+            success: function () {
+                alert('item added to cart');
+                $('#cart-box').load(location.href + " #cart-box>*", "");
+                $('#cart-dropdown').load(location.href + " #cart-dropdown>*", "");
+            }
+        });
+    });
+
+
+    </script>
 {% endblock %}

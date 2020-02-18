@@ -17,7 +17,7 @@ class ShopSessionsMiddleware(MiddlewareMixin):
 
             shop_details = None
             try:
-                shop_details = Shop.objects.get(shop_name='market_woman')
+                shop_details = Shop.objects.get(id=1)
             except:
                 pass
 
@@ -27,7 +27,7 @@ class ShopSessionsMiddleware(MiddlewareMixin):
                 request.session['shop_phoneNo'] = shop_details.get_phoneNo()
                 request.session['shop_address'] = shop_details.get_address()
                 request.session['domain'] = shop_details.get_domain()
-                
+
 
 
                 if not shop_details.get_alt_phoneNO() == None:

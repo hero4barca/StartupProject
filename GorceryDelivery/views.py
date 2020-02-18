@@ -4,18 +4,25 @@ from GorceryDelivery.modules.ItemsInOrder import *
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponseRedirect, HttpResponse
 from GorceryDelivery.forms import *
+from django.conf import settings
+from django.views.decorators.csrf import csrf_exempt
 
 import random
 from GorceryDelivery.modules.PDFGenerator import *
 
 from decimal import Decimal
 from datetime import datetime
+from collections import Counter
 
 #for ajax request
 from django.template.loader import render_to_string
 from django.http import JsonResponse
 from django.core.mail import send_mail, EmailMessage
 from io import BytesIO
+
+import string, json, requests
+import hmac,hashlib
+
 
 
 def read_all_categories():
@@ -72,6 +79,9 @@ def clear_order_sessions(request):
 
     if 'items_in_order' in request.session:
         del request.session['items_in_order']
+
+    if 'cart' in request.session:
+        del request.session['cart']
 
     if 'current_total' in request.session:
         del  request.session['current_total']
@@ -213,7 +223,7 @@ def contact(request):
             message = request.POST.get('Message','')
 
         #assert False
-        subject = ' Contact Mail - ' + subject
+        subject = 'From Contact page: ' + subject
 
         message += '\n\n'
         message += '*****SENDER DETAILS*******'
@@ -226,7 +236,7 @@ def contact(request):
                     subject,
                     message,
                     settings.EMAIL_HOST_USER,
-                    ['marketwomanPH@gmail.com'],
+                    ['marketwomanph@gmail.com'],
                     fail_silently=False,
                 )
                 email_success = True
@@ -239,133 +249,6 @@ def contact(request):
     return render(request, 'contact.html', {'categories': all_categories,
                                             'errors':errors})
 
-
-
-def password_reset(request):
-    """
-    View function: main function for pasword reset
-    :param request: HTTP request
-    :return: HTTP redirect for successfully sending password reset email; renders reset page if method is not 'POST'
-    """
-
-    status = True
-    if request.method == 'POST':
-        form = PasswordResetDetailsForm(request.POST)
-
-        if form.is_valid():
-            cd = form.cleaned_data
-
-
-            the_user = User.objects.get(email=cd.get('email'), username =cd.get('username') )
-            the_profile = UserProfile.objects.get(user=the_user)
-            the_customer = Customer.objects.get(user_profile__user=the_user)
-
-            try:
-                shop_details = Shop.objects.get(email=settings.EMAIL_HOST_USER)
-                domain = shop_details.get_domain()
-            except:
-                status = False
-
-            reset_link = domain + '/change_password/' + str(the_user.id) + '/' + str(the_profile.id) + '/' + str(
-                the_customer.id) + '/'
-
-            subject = 'Market woman: password reset'
-            message = 'Dear ' + cd.get('firstname')+ ',\n\n' \
-                      'You can use the link below to reset your password. Please ignore this message if you did not initiate this. \n ' \
-                      '     ' + reset_link + ' \n\n' \
-                                             'marketwomanPH '
-            #assert False
-
-            if status:
-                try:
-                    send_mail(
-                    subject,
-                    message,
-                    settings.EMAIL_HOST_USER,
-                    [cd.get('email')]
-                    )
-                except:
-                    status = False
-            #assert False
-            if status:
-                return HttpResponseRedirect('/success/password_reset/')
-
-    else:
-
-        form = PasswordResetDetailsForm()
-
-    return render(request,'reset_password.html',{'form': form,
-                                                 'status': status})
-
-
-
-def change_password(request, user_id, profile_id, customer_id):
-    """
-    View function: Handles the link generated and sent to the email of a customer for password recovery
-    verifies the link and redirects to update password page if valid
-    :param request: HTTP request
-    :param user_id: user ID
-    :param profile_id: user_profile ID
-    :param customer_id: customer_id
-    :return: HTTP response or redirect
-    """
-
-    verify = True
-
-    try:
-        the_user = User.objects.get(id= user_id)
-        the_profile = UserProfile.objects.get(id= profile_id, user = the_user)
-        the_customer = Customer.objects.get(id= customer_id, user_profile= the_profile)
-    except:
-        verify = False
-
-    if verify == True:
-        request.session['update_password_user'] = user_id
-        return  HttpResponseRedirect('/update_password/')
-    else:
-        return HttpResponse('The request is invalid, please use the link that was sent to you via email')
-
-
-
-
-
-def update_password(request):
-    """
-    View function: allows user to actually update the password
-    :param request: HTTP request
-    :return: HTTP redirect for successful update or renders 'password update form' is request method isn't 'POST'
-    """
-
-    if not 'update_password_user' in request.session:
-        return HttpResponse('This request in invalid, please use the link that was sent to you via email')
-
-    update = True
-
-    if request.method == 'POST':
-        form = UpdatePasswordForm(request.POST)
-        if form.is_valid():
-            cd = form.cleaned_data
-            new_password = cd.get('new_password')
-
-            try:
-                the_user = User.objects.get(id = int(request.session['update_password_user']))
-
-                the_user.set_password(new_password)
-                the_user.save()
-            except:
-                update = False
-            #assert False
-            if update == True:
-                del request.session['update_password_user']
-                return HttpResponseRedirect('/success/password_update/')
-
-    else:
-        form = UpdatePasswordForm()
-
-
-    #assert False
-    return render(request, 'update_password.html', {'form': form,
-                                                    'update': update})
 
 def policy(request):
     """
@@ -485,7 +368,7 @@ def item_details(request, id_item):
     except:
         the_item = None
 
-    return render (request,'single_item.html', {'item': the_item,
+    return render(request,'single_item.html', {'item': the_item,
                                                 'categories': all_categories,
                                                 'measure': sales_measures,
                                                 'presentation': presentation})
@@ -519,35 +402,41 @@ def add_order_item(request):
                 request.session['items_in_order'] = order_item_list.copy()
 
         for item in request.session['items_in_order']:
-            item_qty = int(item['qty'])
-            current_total = Decimal(current_total) + (Decimal(item['price']) *item_qty)
+            #item_qty = int(item['qty'])
+            current_total = Decimal(current_total) + Decimal(item['price']) #*item_qty)
         request.session['current_total'] = str(current_total)
+        aggregate_item_qty(request)
 
     #return HttpResponse(request.session['items_in_order'])
+    #what if: call aggregate
     return redirect(request.META['HTTP_REFERER'])
 
 
 
 
 
-def remove_order_item(request, name):
+def remove_order_item(request, name, description):
     """
     :param request:
     :param name:
     :return:
     """
     order_items_list = []
+    the_item = None
 
     if 'items_in_order' in request.session:
 
         order_items_list = request.session['items_in_order']
         for item in order_items_list:
-            if item['name'] == name:
-                order_items_list.remove(item)
+            if item['name'] == name and item['description'] == description:
+                the_item = item
 
-                if request.session['current_total']:
-                    new_total= Decimal(request.session['current_total']) - Decimal( item['price'])
-                    request.session['current_total']= str(new_total)
+
+        while the_item in order_items_list:
+            order_items_list.remove(the_item)
+            if request.session['current_total']:
+                new_total= Decimal(request.session['current_total']) - Decimal( the_item['price'])
+                request.session['current_total']= str(new_total)
 
         if len(order_items_list) == 0:
             clear_order_sessions(request)
@@ -591,7 +480,7 @@ def register_customer(request):
             success = True
 
             subject = 'Welcome mail - Market Woman'
-            message = 'Dear' + cd['firstname'] + ',\n\n'
+            message = 'Dear ' + cd['firstname'] + ',\n\n'
             message += 'We are pleased to confirm your registration as a customer of market woman.' \
                        'Your account details are as follows: \n' \
                        '    Name: ' + cd['firstname'] + ' ' + cd['lastname'] + '\n' \
@@ -627,15 +516,33 @@ def user_account(request):
     :param request:
     :return: a redirect to index page
     """
-    current_user_profile = UserProfile.objects.get(user=request.user)
+    try:
+        current_user_profile = UserProfile.objects.get(user=request.user)
 
-    if 'usertype' not in request.session:
-        request.session['usertype'] = current_user_profile.get_userType()
-        request.session['username'] = request.user.get_username()
+        if 'usertype' not in request.session:
+            request.session['usertype'] = current_user_profile.get_userType()
+            request.session['username'] = request.user.get_username()
 
 
-    return HttpResponseRedirect('/index/')
+        return HttpResponseRedirect('/index/')
+    except:
 
+        return HttpResponse ("login error, please retry")
+
+
+def customer_account(request):
+
+    try:
+        current_user_profile = UserProfile.objects.get(user=request.user)
+        current_customer_profile = Customer.objects.get(user_profile= current_user_profile)
+
+        customer_payments = Payment.objects.filter(order__customer=current_customer_profile)
+    except:
+        customer_payments = None
+
+    return render(request, 'customer_account.html', {'payments': customer_payments,
+                                                        'customer': current_customer_profile,
+                                                        'user': current_user_profile })
 
 
 
@@ -652,28 +559,38 @@ def success(request, action):
 
 def aggregate_item_qty(request):
     """
-    view renders checkout page; aggregates item qty by increasing qunatity and deleting duplicates
+    view renders checkout page; aggregates item qty by increasing quantity and deleting duplicates
     :param request: http request
     :return: http request
-    """
 
-    checkout_items = []
+
+    """
 
     if 'items_in_order' in request.session:
         checkout_items = request.session['items_in_order']
-        no_of_items = len(checkout_items)
-        #resolve multiple item by removing increasing the qty and removing deplicate from list
-        for index1, item1 in enumerate(checkout_items):
-            for index2, item2 in enumerate(checkout_items):
-                # compare items, not same index AND same item id
-                if not index1 == index2:
-                    if item1['id'] == item2['id']:
-                        qty = int(item1['qty'])  # increase qty of 1st item
-                        qty = qty + 1
-                        item1['qty'] = qty
-                        del checkout_items[index2]
+        unique_items =[]
+        quantity = []
 
-        request.session['items_in_order'] = checkout_items.copy()
+        for item in checkout_items:
+            if item not in unique_items:
+                unique_items.append(item)
+                quantity.append(1)
+            else:
+                for index in range(0, len(unique_items)):
+                    if unique_items[index] == item:
+                        quantity[index] = quantity[index] + 1
+
+        cart = {}
+        cart_dict_list = []
+        for index in range(0, len(unique_items)):
+
+            cart['items'] = unique_items[index]
+            cart ['quantity'] = quantity[index]
+            cart_dict_list.append(cart.copy())
+
+        request.session['cart'] = cart_dict_list.copy()
+        #assert False
+
     return
 
 
@@ -693,8 +610,10 @@ def checkout(request):
         return HttpResponse(' Checkout is temporarily unavailable. Please contact MarketWomanPh for details.')
 
 
+
     initial_data = {}
     aggregate_item_qty(request) # to clean up qty
+
 
     if 'usertype' in  request.session:
         current_user = request.user
@@ -737,7 +656,7 @@ def checkout(request):
 
 
 
-def reduce_item_qty(request, item_name):
+def reduce_item_qty(request, name, description):
     """
     reduces item qty on checkout; also adjusts current total accordigly
     :param request:
@@ -745,29 +664,29 @@ def reduce_item_qty(request, item_name):
     :return:
     """
     order_items_list = []
+    the_item = None
+
     if 'items_in_order' in request.session:
+
         order_items_list = request.session['items_in_order']
-        for index, item in enumerate(order_items_list):
-            if item['name'] == item_name:
-                current_qty = int(item['qty'])
-                if current_qty == 1:# if item qty =1; call remove it
-                    return remove_order_item(request,item_name)
-                if current_qty > 1:# subtract qty and update sessions var
-                    current_qty = current_qty -1
-                    order_items_list[index]['qty'] = current_qty
+        for item in order_items_list:
+            if item['name'] == name and item['description'] == description:
+                the_item = item
+                break
 
-                    #modify current total session variable
-                    new_total = Decimal(request.session['current_total']) - Decimal(item['price'])
-                    request.session['current_total'] = str(new_total)
 
-                    request.session['items_in_order'] = order_items_list.copy()
+        # modify current total session variable
+        new_total = Decimal(request.session['current_total']) - Decimal(the_item['price'])
+        request.session['current_total'] = str(new_total)
+        order_items_list.remove(the_item)
+        request.session['items_in_order'] = order_items_list.copy()
 
     return redirect(request.META['HTTP_REFERER'])
 
 
 
 
-def add_item_qty(request, item_name):
+def increase_item_qty(request, name, description):
     """
     increases item qty on checkout; also adjusts current total accordingly
     :param request:
@@ -775,21 +694,24 @@ def add_item_qty(request, item_name):
     :return:
     """
     order_items_list = []
+    the_item = None
+
+
     if 'items_in_order' in request.session:
         order_items_list = request.session['items_in_order']
 
-        for index, item in enumerate(order_items_list):
-            if item['name'] == item_name:
-                current_qty = int(item['qty'])
-                #if current_qty > 1:
-                current_qty = current_qty + 1
-                order_items_list[index]['qty'] = current_qty
+        for item in order_items_list:
+            if item['name'] == name and item['description'] == description:
+                the_item = item
+                break
 
-                # modify current total session variable
-                new_total = Decimal(request.session['current_total']) + Decimal(item['price'])
-                request.session['current_total'] = str(new_total)
+        # modify current total session variable
+        new_total = Decimal(request.session['current_total']) + Decimal(the_item['price'])
+        request.session['current_total'] = str(new_total)
+        order_items_list.append(the_item)
+        request.session['items_in_order'] = order_items_list.copy()
 
-                request.session['items_in_order'] = order_items_list
+
 
     return redirect(request.META['HTTP_REFERER'])
 
@@ -836,9 +758,14 @@ def create_new_order(request):
     objDate = datetime.strptime(delivery_date, '%d-%m-%Y')
     delivery_date = objDate.strftime( '%Y-%m-%d')
 
-    if 'items_in_order' in request.session:
+    if 'items_in_order' in request.session and 'cart' in request.session:
 
         order_items_list = request.session['items_in_order']
+        cart_items = request.session['cart']
+
+
+        #change this to cart
+
         current_customer = None
         success = True
 
@@ -872,7 +799,11 @@ def create_new_order(request):
 
         #create orderItmes and save to db
         if success == True:  # do not create orderItems if order wasn't successfully created
-            for item in order_items_list:
+            for obj in cart_items:
+
+                item = obj['items']
+                item_quantity = obj['quantity']
+
 
                 #*** assign presentation
                 if 'presentation' in item:
@@ -895,9 +826,9 @@ def create_new_order(request):
                 try:
                     new_order_item = OrderItems(order= new_order,
                                                         item_id= int(item['id']),
-                                                        quantity= int(item['qty']),
+                                                        quantity= int(item_quantity),
                                                         order_item_price =  Decimal(item['price']),
-                                                        price_by_qty=  Decimal(item['price'])*int(item['qty']),
+                                                        price_by_qty=  Decimal(item['price'])*int(item_quantity),
                                                         order_item_desc= item['description'],
                                                         measure= item_measure,
                                                         presentation= item_presentation
@@ -905,7 +836,7 @@ def create_new_order(request):
                     new_order_item.save()
 
                 except:
-                    new_order.delete()#delete the order object(not order object with corresponding order items); cascade delete FK
+                    new_order.delete()#delete the order object(note: order object with corresponding order items); cascade delete FK
                     success = False
                     break  # do not create any more orderitems
 
@@ -974,18 +905,22 @@ def show_order_receipt(request):
     """
     bought_items=None
     the_order = None
-    
+    payment = None
+
     if 'order_ID' in request.session:
         try:
             the_order = Order.objects.get(id= int(request.session['order_ID']))
+            payment = Payment.objects.get(order=the_order)
         except:
             the_order = None
 
-    send_order_confirmation_email(request, the_order)
+    send_order_confirmation_email(request, the_order, payment.get_trans_ref())
     bought_items = OrderItems.objects.filter(order=the_order)
 
     return render (request, 'order_success.html', {'order_details': the_order,
-                                                   'bought_items': bought_items})
+                                                   'bought_items': bought_items,
+                                                   'trans_ref': payment.get_trans_ref()
+                                                   })
 
 
 
@@ -1005,6 +940,7 @@ def single_orderPDF(request):
 
         try:
             order_details = Order.objects.get(id=int(request.session['order_ID']))
+
         except:
             order_details = None
     bought_items = OrderItems.objects.filter(order=order_details)
@@ -1018,63 +954,198 @@ def single_orderPDF(request):
 def check_sess(request):
     return HttpResponse('Order not successful')
 
+#CE integration views**********
 
-#******VOUGE PAY integration views
-
-def make_payment1(request):
+def make_payment2(request):
     """
-    View function: To process payment via 'Vouge Payment' API
-    :param request: Http request
-    :return: redirect: success url, failure url,; render: vouge payment form
-    """
-    current_order = create_new_order(request)
-    customer_name = current_order.get_buyer_firstname() + ' ' + current_order.get_buyer_lastname()
-
-    success_url = request.session['domain'] + '/order/show_receipt/' + str(current_order.pk) + '/'# to show reciept page after successful payment
-    failure_url = request.session['domain'] + '/order/failure/'
-    notify_url = request.session['domain'] + '/order/notify/'
-    memo = 'order for ' + current_order.get_buyer_firstname() +  ': ' + str(current_order.get_order_date() )
-
-    return render(request, 'vouge-payment.html', {'order': current_order,
-                                                  'success': success_url,
-                                                  'fail': failure_url,
-                                                  'notify': notify_url,
-                                                  'memo': memo,
-                                                  'customer_name': customer_name
-                                                  })
-
-def show_order_receipt1(request,order_id):
-    """
-    View function: show order confirmation page for Vouge payment
+    Cash Envoy standard payment integration
     :param request:
-    :param the_order:
     :return:
     """
-    bought_items=None
-    the_order = None
+
+    current_order = create_new_order(request)
 
 
+    merchant_id = "7427"
+
+    key = "5fd107ba91454574d15c733ce7d8e1d1"
+
+    letters = string.ascii_lowercase
+    numbers = string.digits
+    trans_ref = ''.join(random.choice(letters + numbers) for i in range(12))
+
+    amount = Decimal(request.session['total_plus_serviceCharge'])
+
+    buyer_email = request.session['ord_email']
+
+    trans_desc = " before API-call."
+
+    # get the ID of current_order, put it in a session and retrieve at 'show_order_reciept
+    request.session['order_ID'] = str(current_order.id)
+
+    cenurl = 'https://www.mymarketwoman.com/order/payment_complete/'
+
+    data = key + trans_ref + str(amount)
+    key_bytes = bytes(key, 'latin-1')
+    data_bytes = bytes(data, 'latin-1')
+    signature = hmac.new(key_bytes, data_bytes, hashlib.sha256).hexdigest()
+
+
+    #save initial payment data to database
+    new_payment = Payment(order=current_order,
+                          description= trans_desc,
+                          transaction_reference= trans_ref,
+                          )
+    new_payment.save()
+
+    return render(request, 'CEpay.html',{'merchant_id': merchant_id,
+                                         'key': key,
+                                         'trans_ref': trans_ref,
+                                         'amount': amount,
+                                         'customer_id': buyer_email,
+                                         'memo': trans_desc,
+                                         'cenurl': cenurl,
+                                         'signature': signature
+                                         })
+
+
+
+
+@csrf_exempt
+def payment_complete(request):
+
+    flag = 0
+
+    merchant_id = "7427"
+
+    key = "5fd107ba91454574d15c733ce7d8e1d1"
+
+    type ='json'
+
+    post_returned_ref = request.POST['ce_transref']
     try:
-        the_order = Order.objects.get(id= int(order_id))
+        _payment = Payment.objects.get(transaction_reference=post_returned_ref)
     except:
-        the_order = None
+        _payment = None
 
-    send_order_confirmation_email(request, the_order)
-
-    bought_items = OrderItems.objects.filter(order=the_order)
-
-    return render (request, 'order_success.html', {'order_details': the_order,
-                                                   'bought_items': bought_items})
+    request.session['order_ID'] = _payment.order_id
 
 
+    #assert False
+
+    if _payment:
+        trans_ref = _payment.get_trans_ref()
+        cdata = key + trans_ref + merchant_id
+
+        key_bytes = bytes(key, 'latin-1')
+        cdata_bytes = bytes(cdata, 'latin-1')
+        signature = hmac.new(key_bytes, cdata_bytes, hashlib.sha256).hexdigest()
 
 
-def send_order_confirmation_email(request, the_order):
+        #data = 'mertid=' + merchant_id +'&transref=' + trans_ref + '&respformat=' + type + '&signature=' + signature #initialize the request variables
+        url = 'https://www.cashenvoy.com/sandbox2/?cmd=requery' # this is the url gateway's test api
+        #url = 'https://www.cashenvoy.com/webservice/?cmd=requery' # this is the url of the gateway's live api
+
+        resp = requests.post(
+
+            url,
+            data = dict(mertid=merchant_id, transref=trans_ref, respformat=type, signature=signature),
+            verify = False, #change to true once Live
+        )
+        data = resp.text
+        dict_obj = json.loads(data)
+
+        if len(dict_obj) == 3:
+            returned_trans_ref = dict_obj["TransactionId"]
+            returned_status = dict_obj["TransactionStatus"]
+            returned_amount = dict_obj["TransactionAmount"]
+
+
+            if _payment.get_payment_amount() == Decimal(returned_amount) and returned_status == 'C00': #amount returned by CE service == amount in db?
+
+                _payment.set_status(returned_status)
+                _payment.set_order_paidFor_true()
+                _payment.set_description("Successful payment")
+                _payment.save()
+                clear_order_sessions(request)
+
+                return redirect('/order/show_receipt/')
+            else:
+                flag = 3
+                #clear_order_sessions(request)
+                return CE_error_handler(request,flag,_payment,dict_obj)
+
+        else:
+
+            flag = 2
+            #clear_order_sessions(request)
+            return CE_error_handler(request, flag, _payment, dict_obj)
+
+    else:
+        flag = 1
+        #clear_order_sessions(request)
+        return CE_error_handler(request, flag, _payment)
+
+
+
+
+
+def CE_error_handler(request, flag, payment, dict_obj=None):
+
+
+    errMsg = None
+
+
+
+    CE_service_err = dict_obj["TransactionStatus"]
+
+
+
+
+    if CE_service_err == 'C01':
+        errMsg = "Payment cancelled by user"
+
+    elif CE_service_err == 'C02':
+        errMsg = "Payment cancelled due to user inactivity"
+
+    elif CE_service_err == 'C03':
+        errMsg =  "No transaction record"
+
+    elif CE_service_err == 'C04':
+        errMsg = "Insufficient funds"
+
+    elif CE_service_err == 'C05':
+        errMsg = "Transaction failed. Contact support@cashenvoy.com for more information"
+
+    elif CE_service_err == 'C07':
+        errMsg = "Transaction refunded."
+
+    elif flag == 3 and not payment.get_payment_amount() == Decimal(dict_obj["TransactionAmount"]):
+        errMsg = "Incorrect transaction amount"
+        flag = 4
+
+    elif flag == 1:
+        errMsg = "No corresponding payments found."
+
+
+    payment.set_status(CE_service_err)
+    payment.set_description(errMsg)
+    payment.save()
+
+    return render(request,'CE_error.html', {'error_message': errMsg,
+                                            'flag': flag,
+                                            'ref_number': payment.get_trans_ref()
+                                             })
+
+
+
+
+def send_order_confirmation_email(request, the_order,transaction_reference):
     """
-    View function: sends order confirmantion email 
+    View function: sends order confirmantion email
     :param request: Http request
     :param the_order: the new order object
-    :return: 
+    :return:
     """
 
     bought_items = OrderItems.objects.filter(order=the_order)
@@ -1095,6 +1166,7 @@ def send_order_confirmation_email(request, the_order):
               '     Customer name: ' + the_order.get_buyer_firstname() + ' ' + the_order.get_buyer_lastname() + '\n' \
               '     Delivery date: ' + str(the_order.get_delivery_date()) + '\n' \
               '     Delivery address ' + the_order.get_delivery_addr() + '\n' \
+              '     Transaction reference: ' + transaction_reference + '\n'\
               '     Order date: ' + str(the_order.get_order_date()) + '\n\n' \
               'Find attached to this email the detailed order reciept\n\n' \
                                                         'MarketWomanPH'
@@ -1114,5 +1186,7 @@ def send_order_confirmation_email(request, the_order):
     )
 
     return
+
+
 
 

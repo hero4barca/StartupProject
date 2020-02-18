@@ -16,7 +16,7 @@
 			<ul>
 				<li><i class="fa fa-home" aria-hidden="true"></i><a href="/index/">Home</a><span>|</span></li>
 
-                <li><a> Order confirmation</a></li>
+                <li><a> order confirmation</a></li>
 			</ul>
 		</div>
 	</div>
@@ -52,8 +52,10 @@
 			<h3>Order<span>Receipt</span></h3>
             <div class="reciept-top-P">
              {% if order_details %}
-            <p> Your have successfully paid for your order <br/> Order time: {{ order_details.get_order_date }} : {{ order_details.get_order_time }}
-                Find the details displayed below. </p>
+            <p> You have successfully completed payment for your order with the <b>reference number </b>: {{ trans_ref }}
+            <br/> Order time: {{ order_details.get_order_date }} : {{ order_details.get_order_time }}
+               Order confirmation and reciept have been sent to your email.</p>
+            <p>Find the order details displayed below. </p>
             {% else %}
                  <p> Order not successfully created. Click here to return to <a href="/order/checkout/"><em>checkout</em></a></p>
             {% endif %}
@@ -113,8 +115,8 @@
 
 
           <div class="reciept-buttom-P">
-          <p> Your order will be delivered to you delivery address (<b>{{ order_details.delivery_addr }} </b>) on {{ order_details.get_delivery_date }}
-              between 9am and 4pm. For further enquires please call <b>0817 000 0000 </b> </p>
+          <p>  Delivery will be made to your specified address (<b>{{ order_details.delivery_addr }} </b>) on {{ order_details.get_delivery_date }}
+              between 9am and 4pm. For further enquires please call <b>{{request.session.shop_phoneNo }} </b> </p>
               </div>
 
           </div>
@@ -129,7 +131,7 @@
 
 
                     <div class="checkout-right-basket checkout-proceed">
-				        	<a href="/order/download_receipt/ ">Download Order <span class="glyphicon glyphicon-chevron-down" aria-hidden="true"></span></a>
+				        	<a href="/order/download_receipt/ ">Download Order Reciept <span class="glyphicon glyphicon-chevron-down" aria-hidden="true"></span></a>
 			      	</div>
 
 

@@ -52,7 +52,7 @@
 
 	      <div class="checkout-right">
 
-					<h4>Your shopping cart contains: <span>{{ request.session.items_in_order|length }} Products</span></h4>
+					<h4>Your shopping cart contains: <span>{{ request.session.items_in_order|length }} items</span></h4>
 				<table class="timetable_sub">
 					<thead>
 						<tr>
@@ -66,26 +66,26 @@
 						</tr>
 					</thead>
 					<tbody>
-                    {% for item in request.session.items_in_order %}
+                    {% for item in request.session.cart %}
                         <tr class="rem1">
 
 						<td class="invert">{{ forloop.counter }}</td>
-						<td class="invert-image"> <img src="{{ item.img }}" alt=" " class="img-responsive" style="max-width: 155px;"></td>
+						<td class="invert-image"> <img src="{{ item.items.img }}" alt=" " class="img-responsive" style="max-width: 155px;"></td>
 						<td class="invert">
 							 <div class="quantity">
 								<div class="quantity-select">
-									<a href="/qty_minus/{{ item.name }}/"><div class="entry value-minus"> &nbsp;</div></a>
-									<div class="entry value"><span>{{ item.qty }}</span></div>
-									<a href="/qty_plus/{{ item.name}}/"><div class="entry value-plus active"> &nbsp;</div></a>
+									<a href="/qty_minus/{{ item.items.name }}/{{ item.items.description }}/"><div class="entry value-minus"> &nbsp;</div></a>
+									<div class="entry value"><span>{{ item.quantity }}</span></div>
+									<a href="/qty_plus/{{ item.items.name}}/{{ item.items.description }}/"><div class="entry value-plus active"> &nbsp;</div></a>
 								</div>
 							</div>
 						</td>
-						<td class="invert" style="max-width: 300px; ">{{ item.name }}: {{ item.description }}</td>
+						<td class="invert" style="max-width: 300px; ">{{ item.items.name }}: {{ item.items.description }}</td>
                             {% load humanize %}
-						<td class="invert">{{ item.price|floatformat:2|intcomma }} x ({{ item.qty }})</td>
+						<td class="invert">{{ item.items.price|floatformat:2|intcomma }} x ({{ item.quantity }})</td>
 						<td class="invert">
 							<div class="rem">
-                                <a href="/remove_order_item/{{item.name}}/">
+                                <a href="/remove_order_item/{{item.items.name}}/{{ item.items.description }}/">
 								<div class="close1"> </div>
                                 </a>
 							</div>
@@ -105,7 +105,7 @@
 
 
 				</tbody></table>
-                <p> **** There is a service charge of {{ request.session.service_charge }}</p>
+                <!--   <p> **** There is a service charge of </p>   -->
 			</div>
 			<div class="checkout-left">
 
@@ -113,9 +113,9 @@
 					<h4>Order Policy</h4>
 					<ul>
 						<li>Delivery date - at the earliest must be a day after order is made </li>
-                        <li>We d not make deliveries on sundays</li>
+                        <li>We do not make deliveries on sundays</li>
 						<li>'Payment on delivery' is not accepted, all orders must be paid for before delivery</li>
-						<li>Cost of items that could not be sourced will be refunded on delivery</li>
+						<li> If we are unable to source any of the item, you will be notified and the cost will be refund via bank acccount or on delivery</li>
 
 					</ul>
 				</div>
@@ -264,9 +264,9 @@ $(document).ready(function(){
 
 	</script>
 
-<link rel="stylesheet" href="http://code.jquery.com/ui/1.11.0/themes/smoothness/jquery-ui.css">
-<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
-<script src="http://code.jquery.com/ui/1.11.0/jquery-ui.js"></script>
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.11.0/themes/smoothness/jquery-ui.css">
+<script src="https://code.jquery.com/jquery-1.9.1.js"></script>
+<script src="https://code.jquery.com/ui/1.11.0/jquery-ui.js"></script>
  <script>
 $(document).ready(function() {
     $('.datepicker').datepicker({

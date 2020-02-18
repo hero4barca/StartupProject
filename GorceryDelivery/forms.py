@@ -100,7 +100,7 @@ class OrderForm(forms.Form):
                                   (attrs={'placeholder': 'Phone Number'}))
     delivery_address = forms.CharField(max_length=150,
                               widget=forms.Textarea
-                              (attrs={'placeholder': 'Main address',
+                              (attrs={'placeholder': 'Main address- please include landmarks',
                                       'cols': '31'}))
     gender = forms.CharField(label='Gender', widget=forms.Select(choices=[ ('',''),
                                                                             ('male', 'male'),
@@ -146,7 +146,7 @@ class OrderForm(forms.Form):
             weekday = calendar.day_name[delv_date.weekday()]
             if weekday == 'Sunday':
                 self.add_error('delivery_date', 'We do not make deliveries on Sundays')
-                
+
 
 
 

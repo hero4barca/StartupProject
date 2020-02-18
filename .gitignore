@@ -108,3 +108,7 @@ venv.bak/
 
 # Database
 *.sqlite3
+
+#idea files
+#.idea/
+

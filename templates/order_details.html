@@ -69,17 +69,17 @@
                         <th>Price* qty</th>
                     </tr>
                 </thead>
-                  {% for item in request.session.items_in_order %}
+                  {% for item in request.session.cart %}
                  <tbody>
                   <tr>
                       <td>
                       {{ forloop.counter }}
                   </td>
                   <td>
-                      {{ item.name }}({{ item.qty }}) : {{ item.description }}
+                      {{ item.items.name }}({{ item.quantity }}) : {{ item.items.description }}
                   </td>
                     <td>
-                  {{ item.price }} * {{ item.qty }}
+                  {{ item.items.price }} * {{ item.quantity }}
                     </td>
                   </tr>
                   {% endfor %}
@@ -114,7 +114,7 @@
 			      	</div>
 
                     <div class="checkout-right-basket checkout-proceed">
-				        	<a href="/order/payment/">Make Payment <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span></a>
+				        	<a href="/order/payment2/" target="_blank">Make Payment <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span></a>
 			      	</div>
 
 

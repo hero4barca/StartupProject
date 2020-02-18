@@ -1,0 +1,192 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+    <title>
+      {% block title %}
+         customer account
+      {% endblock %}
+    </title>
+
+
+{% block midpage %}
+<!-- products-breadcrumb -->
+	<div class="products-breadcrumb">
+		<div class="container">
+			<ul>
+				<li><i class="fa fa-home" aria-hidden="true"></i><a href="/index/">Home</a><span>|</span></li>
+
+                <li><a> customer account</a></li>
+			</ul>
+		</div>
+	</div>
+<!-- //products-breadcrumb -->
+
+<!-- banner -->
+	<div class="banner">
+		<div class="w3l_banner_nav_left">
+			<nav class="navbar nav_bottom">
+			 <!-- Brand and toggle get grouped for better mobile display -->
+			  <div class="navbar-header nav_2">
+				  <button type="button" class="navbar-toggle collapsed navbar-toggle1" data-toggle="collapse" data-target="#bs-megadropdown-tabs">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				  </button>
+			   </div>
+			   <!-- Collect the nav links, forms, and other content for toggling -->
+
+				{% block navbar %}
+                    {{block.super }}
+                {% endblock %}
+
+			</nav>
+		</div>
+
+		<div class="w3l_banner_nav_right">
+
+
+            <div class="privacy about">
+			<h3>customer account</h3>
+
+	      <div class="checkout-right">
+	          
+	          <div class="customer-details">
+    	          <p>
+    	              Customer Name: {{customer.get_customer_name}} <br/>
+    	              Preffered delivery Address:  {{customer.get_delivery_addr}}<br/>
+    	              Customer Email: {{customer.get_customer_email }}<br/>
+    	              Customer Phone Number: {{customer.get_phone_no}}<br/>
+    	              
+    	          </p><br/>
+	          </div>
+	          
+            {% if payments == None %}
+             <p> <h5> You have not yet attempted any payments to market woman</h5></p>
+             
+             {% else %}
+				<p>	<h5>The details of all your previous are displayed below </span></h5> </p> 
+			{% endif%}
+				<table class="timetable_sub"><br/>
+					<thead>
+						<tr>
+							<th>No.</th>
+							<th>Timestamp</th>
+							<th>Amount</th>
+							<th>Transaction reference</th>
+							<th>Status</th>
+							<th style="max-width: 300px; ">Description</th>
+							
+						</tr>
+					</thead>
+					<tbody>
+                    {% for item in payments %}
+                        <tr class="rem1">
+
+						<td class="invert">{{ forloop.counter }}</td>
+						<td >  {{item.get_timestamp}}</td>
+						<td class="invert">
+							 {% load humanize %}
+							{{item.get_payment_amount|floatformat:2|intcomma}}
+						</td>
+						<td class="invert" >{{ item.get_trans_ref }}</td>
+                            
+						<td class="invert"> {{item.get_status}}</td>
+						
+						<td class="invert" style="max-width: 300px;">
+							{{ item.get_description}}
+
+						</td>
+					</tr>
+                    {% endfor %}
+                   
+				</tbody></table>
+				
+               <!-- <p> **** There is a service charge of </p> -->
+			</div>
+			<div class="checkout-left">
+
+				
+				
+				<div class="clearfix"> </div>
+
+			</div>
+
+		</div>
+
+
+		</div>
+		<div class="clearfix"></div>
+	</div>
+<!-- //banner -->
+
+<!-- Bootstrap Core JavaScript -->
+<script src="js/bootstrap.min.js"></script>
+<script>
+$(document).ready(function(){
+    $(".dropdown").hover(
+        function() {
+            $('.dropdown-menu', this).stop( true, true ).slideDown("fast");
+            $(this).toggleClass('open');
+        },
+        function() {
+            $('.dropdown-menu', this).stop( true, true ).slideUp("fast");
+            $(this).toggleClass('open');
+        }
+    );
+});
+</script>
+<!-- here stars scrolling icon -->
+	<script type="text/javascript">
+		$(document).ready(function() {
+			/*
+				var defaults = {
+				containerID: 'toTop', // fading element id
+				containerHoverID: 'toTopHover', // fading element hover id
+				scrollSpeed: 1200,
+				easingType: 'linear'
+				};
+			*/
+
+			$().UItoTop({ easingType: 'easeOutQuart' });
+
+			});
+	</script>
+<!-- //here ends scrolling icon -->
+<script src="js/minicart.js"></script>
+<script>
+		paypal.minicart.render();
+
+		paypal.minicart.cart.on('checkout', function (evt) {
+			var items = this.items(),
+				len = items.length,
+				total = 0,
+				i;
+
+			// Count the number of each item in the cart
+			for (i = 0; i < len; i++) {
+				total += items[i].get('quantity');
+			}
+
+			if (total < 3) {
+				alert('The minimum order quantity is 3. Please add more to your shopping cart before checking out');
+				evt.preventDefault();
+			}
+		});
+
+	</script>
+
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.11.0/themes/smoothness/jquery-ui.css">
+<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+<script src="http://code.jquery.com/ui/1.11.0/jquery-ui.js"></script>
+ <script>
+$(document).ready(function() {
+    $('.datepicker').datepicker({
+        beforeShowDay: function(dt){ return [dt.getDay() == 0 ? false : true ];},
+        dateFormat: "dd-mm-yy",
+        minDate: 1
+    });
+});
+</script>
+{% endblock %}

@@ -54,12 +54,15 @@
 
                           </div>
                           <div class="form">
+
                             <h2>Login to your account</h2>
+
+                            {{form.non_field_errors}}
 
                             <form action="" method="post">
                                 {{ form.username.errors }}
                               <input type="text" name="username" placeholder="Username" required=" ">
-                                {{ form.password.erros }}
+                                {{ form.password.errors }}
                               <input type="password" name="password" placeholder="Password" required=" ">
                               <input type="submit" value="Login">
 

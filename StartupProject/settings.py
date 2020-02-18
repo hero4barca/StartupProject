@@ -8,6 +8,10 @@ https://docs.djangoproject.com/en/2.2/topics/settings/
 
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.2/ref/settings/
+
+import os
+import socket# Import socket to read host name
+
 """
 
 import os
@@ -25,6 +29,7 @@ else:
 
 
 
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -32,17 +37,33 @@ PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
 # SECURITY WARNING: keep the secret key used in production secret!
-#SECRET_KEY = '&6j$jqjtv5g!_3-%v!7^^^8(nvkl*gjm2r$$!oa^sab@qc#8j('
+SECRET_KEY = '&6j$jqjtv5g!_3-%v!7^^^8(nvkl*gjm2r$$!oa^sab@qc#8j('
 
-#new key
-SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', '&6j$jqjtv5g!_3-%v!7^^^8(nvkl*gjm2r$$!oa^sab@qc#8j(')
+#base on pythonanywhere example
+
+#SECRET_KEY = os.getenv("SECRET_KEY")
+#SECRET_KEY = os.environ.get('SECRET_KEY')
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
 #DEBUG = True
 DEBUG = os.environ.get('DJANGO_DEBUG', '') != 'False'
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['www.mymarketwoman.com','hero4barca.pythonanywhere.com','localhost','127.0.0.1']
+
+#Try and see the implication
+SECURE_CONTENT_TYPE_NOSNIFF = True
+CSRF_COOKIE_SECURE = True
+SECURE_BROWSER_XSS_FILTER = True
+SESSION_COOKIE_SECURE = True
+X_FRAME_OPTIONS = 'DENY'
+
+#***********SSL SETTINGS*********
+# -be sure adequate provision for HTTPS is made!!!!
+SECURE_HSTS_SECONDS = 120
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_SSL_REDIRECT = True
+SECURE_HSTS_PRELOAD = True
 
 
 # Application definition
@@ -100,10 +121,10 @@ WSGI_APPLICATION = 'StartupProject.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'projectdb',
-        'USER': 'root',                      # Not used with sqlite3.
-        'PASSWORD': 'password',                  # Not used with sqlite3.
-        'HOST': '127.0.0.1',                      # Set to empty string for localhost. Not used with sqlite3.
+        'NAME': 'hero4barca$projectdb',
+        'USER': 'hero4barca',                      # Not used with sqlite3.
+        'PASSWORD': 'password@1',                  # Not used with sqlite3.
+        'HOST': 'hero4barca.mysql.pythonanywhere-services.com',                      # Set to empty string for localhost. Not used with sqlite3.
         'PORT': '3306',
     }
 }
@@ -146,7 +167,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
-#STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 #STATICFILES_DIRS = [
    # os.path.join(BASE_DIR, "static"),
 #]
@@ -171,15 +192,17 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 
 # Define EMAIL_BACKEND variable for DJANGO_HOST
-if DJANGO_HOST == "production":
+#if DJANGO_HOST == "production":
     # Output to SMTP server on DJANGO_HOST production
-    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
+#EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_USE_TLS = True
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_USER = 'marketwomanph@gmail.com'
-EMAIL_HOST_PASSWORD = 'marketwoman@1'
+EMAIL_HOST = 'smtp.zoho.com'
+EMAIL_HOST_USER = 'marketwomanph@zohomail.com'
+EMAIL_HOST_PASSWORD ='marketwoman@1'
+#'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' #os.getenv("SENDGRID_API_KEY")
 EMAIL_PORT = 587
+
 
 
 #

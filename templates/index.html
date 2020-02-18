@@ -136,6 +136,7 @@
 			<div class="clearfix"> </div>
 	</div>
 <!-- top-brands -->
+
 	<div class="top-brands">
 		<div class="container">
 			<h3>Popular</h3>
@@ -167,14 +168,15 @@
                                             {% endif %}
 										</div>
 										<div class="snipcart-details top_brand_home_details">
-											<form action="/add_order_item/" method="post">
+											<!--<form action="/add_order_item/" method="post"> -->
+                                            <form class="items-form">
 												<fieldset>
 													<input type="hidden" name="cmd" value="_cart" />
 													<input type="hidden" name="add" value="1" />
 
 													<input type="hidden" name="name" value="{{ item.get_name }} " />
 
-													<input type="hidden" name="price"
+													<input type="hidden" name="price" class="price"
 
                                                          {% if not item.get_discounted_price == 0 %}
                                                             value="{{ item.get_discounted_price }}"
@@ -182,7 +184,7 @@
                                                              value ="{{ item.get_price}}"
                                                          {% endif %}/>
 													<input type="hidden" name="discount_amount" value="{{ item.get_discounted_price }}" />
-													<input type="hidden" name="itemID" value="{{ item.pk }}" />
+													<input type="hidden" name="itemID" class="itemID" value="{{ item.pk }}" />
 													<input type="hidden" name="return" value=" " />
 													<input type="hidden" name="cancel_return" value=" " />
                                                     {%  if item.availability %}
@@ -284,5 +286,30 @@
 	</div>
 -->
 <!-- //fresh-vegetables -->
+    <script type="text/javascript">
 
+    $('.items-form').on('submit', function(event){
+
+        var $submittedform = $(this);
+        event.preventDefault();
+
+
+        $.ajax({
+            type: "POST",
+            url: "/add_order_item/",
+            data: {
+                csrfmiddlewaretoken: $submittedform.find('input[name=csrfmiddlewaretoken]').val(),
+                itemID: $submittedform.find('input.itemID').val(),
+                price: $submittedform.find('input.price').val()
+            },
+
+            success: function () {
+                alert('item added to cart');
+                $('#cart-box').load(location.href + " #cart-box>*", "");
+                $('#cart-dropdown').load(location.href + " #cart-dropdown>*", "");
+            }
+        });
+    });
+
+    </script>
 {% endblock %}

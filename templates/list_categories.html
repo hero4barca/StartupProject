@@ -16,7 +16,7 @@
 		<div class="container">
 			<ul>
 				<li><i class="fa fa-home" aria-hidden="true"></i><a href="/index/">Home</a><span>|</span></li>
-                <li><a>list categories</a></li>
+                <li><a> categories</a></li>
 			</ul>
 		</div>
 	</div>
@@ -57,11 +57,12 @@
                     <li ><a href="/categories/{{ category.pk }}/"> {{ category.get_name }}</a> </li>
 
                     {% endfor %}
+                    {% endif %}
                     <li ><a href="/generic_items/"> other items(no category)</a></li>
 
                    </ul>
 
-               {% endif %}
+
 
 			</div>
 		</div>

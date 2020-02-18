@@ -111,6 +111,16 @@ class Customer(models.Model):
     def get_phone_no(self):
         return self.phone_no
 
+    def get_customer_name(self):
+        return self.user_profile
+
+    def get_customer_email(self):
+        profile = self.user_profile
+        customer_user = profile.user
+        customer_email = customer_user.email
+
+        return customer_email
+
     def get_delivery_addr(self):
         return self.preffered_delivery_addr
 
@@ -297,9 +307,9 @@ class OrderItems(models.Model):
 class Payment(models.Model):
     timestamp = models.DateTimeField(auto_now=True)
     description = models.TextField()
-    payment_type = models.CharField(max_length=200)
-    token_identifier=models.CharField(max_length=200)
+    transaction_reference = models.CharField(max_length=200)
     order = models.ForeignKey(Order,models.SET_NULL,null=True)
+    status = models.CharField(max_length=200,null=True)
 
     def __str__(self):
         return  str(self.order) + " :" + str(self.timestamp)
@@ -310,14 +320,28 @@ class Payment(models.Model):
     def get_description(self):
         return self.description
 
-    def get_payment_type(self):
-        return self.payment_type
-
-    def get_token(self):
-        return self.token_identifier
+    def get_trans_ref(self):
+        return self.transaction_reference
 
     def get_order(self):
         return self.order
+
+    def get_status(self):
+        return self.status
+
+    def get_payment_amount(self):
+        the_order = self.order
+        return the_order.get_order_total()
+
+    def set_status(self, the_status):
+        self.status = the_status
+
+    def set_order_paidFor_true(self):
+        self.order.set_paid_for_True()
+        self.order.save()
+
+    def set_description(self, desc_msg):
+        self.description = desc_msg
 
 
 class Shop(models.Model):

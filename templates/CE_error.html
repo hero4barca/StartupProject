@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Payment error</title>
+</head>
+<body>
+ <h3> Transaction unsuccessful</h3>
+ <p>Transaction reference number: {{ ref_number }}. <i>Use this number for any payment related complaints</i></p>
+    {% if flag == 1 %}
+    <p> {{ error_message }}. Please confirm activity on your account and <a href="/contact/">contact us</a>  if necessary</p>
+    {% elif flag == 4  %}
+        <p> {{ error_message }}. Amount paid and order total do not correspond. This might be a technical issue, please confirm
+        activity on your account and <a href="/contact/">contact us</a>  if necessary</p>
+    {% else %}
+        <p> {{ error_message }}. Click <a href="/order/confirm_details/">here</a>  to return to order page if you wish to retry</p>
+    {% endif %}
+
+</body>
+</html>
