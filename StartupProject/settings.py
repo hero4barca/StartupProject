@@ -37,12 +37,12 @@ PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '&6j$jqjtv5g!_3-%v!7^^^8(nvkl*gjm2r$$!oa^sab@qc#8j('
+#SECRET_KEY = '&6j$jqjtv5g!_3-%v!7^^^8(nvkl*gjm2r$$!oa^sab@qc#8j('
 
 #base on pythonanywhere example
 
-#SECRET_KEY = os.getenv("SECRET_KEY")
-#SECRET_KEY = os.environ.get('SECRET_KEY')
+SECRET_KEY = os.getenv("SECRET_KEY")
+
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -199,7 +199,7 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.zoho.com'
 EMAIL_HOST_USER = 'marketwomanph@zohomail.com'
-EMAIL_HOST_PASSWORD ='marketwoman@1'
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_PASS")
 #'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' #os.getenv("SENDGRID_API_KEY")
 EMAIL_PORT = 587
 

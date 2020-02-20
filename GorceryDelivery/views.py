@@ -733,6 +733,9 @@ def confirm_order_details(request):
                 service_charge = Shop.objects.get(shop_name='market_woman').get_service_charge()
             except:
                 service_charge = 1000
+
+            payment_charge = Decimal(0.016) *  Decimal(request.session['current_total'])
+            service_charge = service_charge + payment_charge
             request.session['service_charge'] = str(service_charge)
 
     if 'current_total' in request.session and 'service_charge' in request.session:
@@ -1093,6 +1096,8 @@ def payment_complete(request):
 def CE_error_handler(request, flag, payment, dict_obj=None):
 
 
+    session_retrieve = retrieve_lost_sessions(request, payment)
+
     errMsg = None
 
 
@@ -1134,8 +1139,8 @@ def CE_error_handler(request, flag, payment, dict_obj=None):
 
     return render(request,'CE_error.html', {'error_message': errMsg,
                                             'flag': flag,
-                                            'ref_number': payment.get_trans_ref()
-                                             })
+                                            'ref_number': payment.get_trans_ref(),
+                                             'session': session_retrieve})
 
 
 
@@ -1188,5 +1193,98 @@ def send_order_confirmation_email(request, the_order,transaction_reference):
     return
 
 
+
+def retrieve_lost_sessions(request, payment):
+
+    #assert False
+    current_order = payment.get_order()
+
+    if current_order:
+
+        request.session['ord_firstname'] = current_order.get_buyer_firstname()
+        request.session['ord_lastname'] = current_order.get_buyer_lastname()
+        request.session['ord_gender'] = current_order.get_buyer_gender()
+        request.session['ord_email'] = current_order.get_buyer_email()
+        request.session['ord_phone_no'] = current_order.get_buyer_phone_no()
+
+        delivery_date = current_order.get_delivery_date()
+        request.session['ord_delivery_date'] = delivery_date.strftime('%d-%m-%Y')
+
+        request.session['ord_delivery_address'] = current_order.get_delivery_addr()
+        request.session['current_total'] = str(current_order.get_items_total())
+        request.session['service_charge'] = str(current_order.get_service_charge())
+        request.session['total_plus_serviceCharge'] = str(current_order.get_order_total())
+
+        try:
+            current_order_items = OrderItems.objects.filter( order = current_order)
+        except:
+            current_order_items = None
+
+        # ítems_in_order'sessions
+        order_item = {}
+        order_item_list = []
+
+        for o_item in current_order_items:
+            grocery_item = o_item.get_item()
+
+            order_item['name'] = grocery_item.get_name()
+            order_item['price'] = str(o_item.get_order_item_price())
+            order_item['img'] = grocery_item.img.url
+            order_item['description'] = o_item.get_order_item_desc()
+            order_item['id'] = grocery_item.id
+            order_item['qty'] = 1
+
+            quantity = o_item.get_quantity()
+
+            for x in range(quantity):
+                order_item_list.append(order_item.copy())
+
+        #'cart sessions'
+        unique_items = []
+        quantity = []
+
+        for o_item in order_item_list:
+
+            if o_item not in unique_items:
+                unique_items.append(o_item)
+                quantity.append(1)
+
+            else:
+                for index in range(0, len(unique_items)):
+                    if unique_items[index] == o_item:
+                        quantity[index] = quantity[index] + 1
+
+
+        cart = {}
+        cart_dict_list=[]
+
+        for index in range (0, len(unique_items)):
+            cart['items'] = unique_items[index]
+            cart['quantity'] = quantity[index]
+
+            cart_dict_list.append(cart.copy())
+
+
+        request.session['items_in_order'] = order_item_list.copy()
+        request.session['cart'] = cart_dict_list.copy()
+
+        #user based sessions
+        if current_order.get_customer():
+            the_customer = current_order.get_customer()
+            customer_profile = the_customer.get_user_profile()
+            customer_user = customer_profile.get_user()
+
+            request.user = customer_user
+            request.session['usertype'] = customer_profile.get_userType()
+            request.session['username'] = customer_user.get_username()
+
+        request.session.set_expiry(3200)
+    else:
+        current_order = None
+
+    if current_order == None:
+        return False
+    else:
+        return True
 
 

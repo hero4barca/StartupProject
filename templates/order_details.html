@@ -51,6 +51,9 @@
 			<h3>Confirm <span>Details</span></h3>
 
 	      <div class="checkout-right">
+
+	   {% if 'cart' in request.session%}
+
             <div class="order_details">
                 <p> <span class="details-heading">Customer Name:  </span>{{ request.session.ord_firstname }} &nbsp; {{ request.session.ord_lastname }}
                             {% if request.session.ord_gender == 'male'  %} (Mr.) {% else %} (Mrs.){% endif %}</p>
@@ -91,7 +94,7 @@
                 </tr>
                <tr class="service_charge">
                <td> - </td>
-               <td> Service charge</td>
+               <td> Service charge(incl payment cost )</td>
 
                <td> {{ request.session.service_charge|floatformat:2|intcomma }}</td>
                </tr>
@@ -103,8 +106,13 @@
               </tbody>
               </table>
           </div>
-
+        {% else  %}
+            <p align='center'> There are currently no order details to display.</p>
+        {% endif %}
 			</div>
+
+
+		{% if 'cart' in request.session %}
 			<div class="checkout-left">
 
 				<div class="col-md-8 address_form_agile">
@@ -123,6 +131,7 @@
 				<div class="clearfix"> </div>
 
 			</div>
+        {% endif %}
 
 		</div>
 

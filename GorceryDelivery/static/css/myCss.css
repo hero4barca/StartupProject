@@ -66,11 +66,11 @@ td.invert-image img {
     border: 1px solid #84c639;
     margin: .35em 0 0;
     background: url(../images/cart.png) no-repeat 116px 9px;
-    
+
 
     box-sizing: inherit;
     overflow: visible;
-} 
+}
 
 .top_checkout_box a:hover{
     color: #fff;
@@ -105,6 +105,7 @@ td.invert-image img {
 
 .checkout-proceed {
     float: right;
+
     }
 
 .details-heading{

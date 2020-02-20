@@ -93,6 +93,9 @@ class UserProfile(models.Model):
     def get_gender(self):
         return self.gender
 
+    def get_user(self):
+        return self.user
+
 
 class Customer(models.Model):
     gender = models.CharField(max_length=200, choices=(('male','male'),('female','female')))
@@ -104,6 +107,9 @@ class Customer(models.Model):
 
     def __str__(self):
         return str(self.user_profile) + ':' + self.get_gender()
+
+    def get_user_profile(self):
+        return self.user_profile
 
     def get_gender(self):
         return self.gender
@@ -350,7 +356,7 @@ class Shop(models.Model):
     phone_number_2 =  models.CharField(max_length=16,  null=True, default=None)
     address= models.TextField(default='Coca-cola junction, Trans-Amadi way')
     email = models.EmailField(default='hero4barca@gmail.com')
-    site_domain = models.CharField(max_length=200, default='www.marketwoman.com.ng')
+    site_domain = models.CharField(max_length=200, default='www.marketwoman.com')
     service_charge = models.DecimalField(decimal_places=2, max_digits=15)
     is_active = models.BooleanField(default=False)
 

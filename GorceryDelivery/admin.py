@@ -227,8 +227,11 @@ class AdminPresentation(admin.ModelAdmin):
 
 @admin.register(Payment, site = admin_site)
 class AdminPayment(admin.ModelAdmin):
-    list_display = ('order', 'timestamp', 'transaction_reference', 'status','description' )
+    list_display = ('order', 'payment_amount',  'timestamp', 'transaction_reference', 'status','description' )
     list_per_page = 10
+
+    def payment_amount(self, obj):
+        return obj.order.order_total
 
 
 
